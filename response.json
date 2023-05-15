@@ -1,0 +1,16 @@
+Standart response if success
+Status code: 200, 201
+{
+    "result": {
+        "penis": 16,
+        "duration": 0
+    }
+}
+
+Error: 400, 401, 403, 404
+{
+    "error": "error message"
+}
+
+500 - Internal Server Error
+
