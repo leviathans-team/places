@@ -3,9 +3,10 @@ package usecase
 import (
 	"errors"
 	"fmt"
-	"github.com/mod/internal"
-	"github.com/mod/internal/auth"
-	"github.com/mod/internal/auth/repository"
+	"golang-pkg/internal"
+	"golang-pkg/internal/auth"
+	"golang-pkg/internal/auth/repository"
+
 	"log"
 	"time"
 )

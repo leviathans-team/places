@@ -3,9 +3,10 @@ package handlers
 import (
 	"errors"
 	"github.com/gofiber/fiber/v2"
-	"github.com/mod/internal"
-	"github.com/mod/internal/auth"
-	"github.com/mod/internal/auth/usecase"
+	"golang-pkg/internal"
+	"golang-pkg/internal/auth"
+	"golang-pkg/internal/auth/usecase"
+
 	"time"
 )
 
