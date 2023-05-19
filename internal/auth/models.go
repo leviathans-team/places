@@ -1,5 +1,7 @@
 package auth
 
+import "github.com/dgrijalva/jwt-go"
+
 type UserForRegister struct {
 	//Id         int    `json:"id" validate:"required"`
 	Name       string `json:"name" validate:"required"`
@@ -21,4 +23,9 @@ type BusinessUserForRegister struct { // Версия профиля для би
 type UserForLogin struct {
 	Login    string `json:"login" validate:"required"`
 	Password string `json:"password" validate:"required"`
+}
+
+type TokenClaims struct {
+	jwt.StandardClaims
+	UserId int64 `json:"userId"`
 }

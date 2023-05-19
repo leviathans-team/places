@@ -2,6 +2,7 @@ package repository
 
 import (
 	"crypto/md5"
+	"errors"
 	"fmt"
 	"golang-pkg/internal"
 	"golang-pkg/internal/auth"
@@ -48,7 +49,7 @@ values ($1, $2, $3, $4, $5) returning user_id`, user.Name, user.Surname, user.Pa
 
 	return internal.HackError{}
 }
-func TrySingIn(login, password string) (bool, internal.HackError) {
+func TrySingIn(login, password string) (int64, internal.HackError) {
 	result := false
 	var userId int64
 	passwordHash := md5.New()
@@ -58,7 +59,7 @@ func TrySingIn(login, password string) (bool, internal.HackError) {
 	err := internal.Tools.Connection.QueryRowx(`select user_id from users_info where (email=$1 or phone=$1)`, login).Scan(&userId)
 	if err != nil {
 		log.Print(err)
-		return false, internal.HackError{
+		return -1, internal.HackError{
 			Code:      500,
 			Err:       err,
 			Timestamp: time.Now(),
@@ -68,12 +69,21 @@ func TrySingIn(login, password string) (bool, internal.HackError) {
 	err = internal.Tools.Connection.QueryRowx(`select exists(select * from users_login where login_id=$1 and password_hash=$2)`, userId, stringPasswordHash).Scan(&result)
 	if err != nil {
 		log.Print(err)
-		return false, internal.HackError{
+		return -1, internal.HackError{
 			Code:      500,
 			Err:       err,
 			Timestamp: time.Now(),
 		}
 	}
 
-	return result, internal.HackError{}
+	if !result {
+		log.Print(errors.New("failed login"))
+		return -1, internal.HackError{
+			Code:      401,
+			Err:       errors.New("failed login"),
+			Message:   "login or password incorrect",
+			Timestamp: time.Now(),
+		}
+	}
+	return userId, internal.HackError{}
 }

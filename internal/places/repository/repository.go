@@ -1,21 +1,22 @@
 package repository
 
-import (
-	models "golang-pkg/internal"
-	"log"
-)
-
-func CreateFilter(body *models.Filter) {
-	models.Connection.Database.QueryRowx(`INSERT INTO filters
-	(filterName)
-	VALUES ($1)`, body.FilterName)
-}
-
-func GetAllFilters() []models.Filter {
-	var result []models.Filter
-	models.Connection.Database.Get(&result, `SELECT * FROM filters`)
-	return result
-}
+//
+//import (
+//	models "golang-pkg/internal"
+//	"log"
+//)
+//
+//func CreateFilter(body *models.Filter) {
+//	models.Connection.Database.QueryRowx(`INSERT INTO filters
+//	(filterName)
+//	VALUES ($1)`, body.FilterName)
+//}
+//
+//func GetAllFilters() []models.Filter {
+//	var result []models.Filter
+//	models.Connection.Database.Get(&result, `SELECT * FROM filters`)
+//	return result
+//}
 
 //
 //func CreateType(types string) {
@@ -98,22 +99,22 @@ func GetAllFilters() []models.Filter {
 //	marketplace.Connection.Database.Get(&new, `SELECT * FROM items WHERE item_id = $1`, body.Item_id)
 //	return new
 //}
-
-func InitTables() error {
-	_, err := models.Connection.Database.Exec(`CREATE TABLE filters (
-    	filterId BIGSERIAL PRIMARY KEY NOT NULL ,
-    	filterName TEXT NOT NULL ,
-		);`)
-	if err != nil {
-		log.Println(err)
-	}
-	return err
-}
-
-func DropTable() error {
-	_, err := models.Connection.Database.Exec(`DROP TABLE filters`)
-	if err != nil {
-		log.Println(err)
-	}
-	return err
-}
+//
+//func InitTables() error {
+//	_, err := models.Connection.Database.Exec(`CREATE TABLE filters (
+//    	filterId BIGSERIAL PRIMARY KEY NOT NULL ,
+//    	filterName TEXT NOT NULL ,
+//		);`)
+//	if err != nil {
+//		log.Println(err)
+//	}
+//	return err
+//}
+//
+//func DropTable() error {
+//	_, err := models.Connection.Database.Exec(`DROP TABLE filters`)
+//	if err != nil {
+//		log.Println(err)
+//	}
+//	return err
+//}

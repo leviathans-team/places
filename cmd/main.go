@@ -23,6 +23,17 @@ func main() {
 
 	models.Tools.Logger = logger.NewServiceLogger(conf)
 
+	models.Tools.Connection, err = db.InitPsqlDB(conf)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = models.Tools.Connection.Ping()
+	if err != nil {
+		log.Panic(err)
+	}
+	//кваврп
+
 	var app = fiber.New()
 	handlers.SetupRoutes(app)
 	delivery.Hearing(app) // создай группу для сових ручек, в будующем будет проще поддерживать/фиксить/строить код
@@ -31,10 +42,4 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	models.Tools.Connection, err = db.InitPsqlDB(conf)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 }
