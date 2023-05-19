@@ -1,36 +1,33 @@
-package models
+package internal
 
 import (
-	"github.com/jmoiron/sqlx"
-	"gopkg.in/mgo.v2"
+	"time"
 )
 
-type Meta struct {
-	PlaceId  int64  `bson:"placeId"`
-	PlaceUrl string `bson:"placeUrl"`
+type User struct {
+	Id         int    `json:"id"`
+	Name       string `json:"name"`
+	Surname    string `json:"surname"`
+	Patronymic string `json:"patronymic"`
+	Email      string `json:"email"`
+	Phone      string `json:"phone"`
+	IsAdmin    bool
+	Password   string
 }
 
-type Filter struct {
-	FilterId   int64  `json:"filterId"`
-	FilterName string `json:"filterName"`
+type HackError struct {
+	Code      int
+	Err       error
+	Message   string
+	Timestamp time.Time
 }
 
-type Place struct {
-	PlaceId      int64  `bson:"placeId"`
-	PlaceName    string `bson:"placeName"`
-	PlaceDestiny string `bson:"placeDestiny"`
-	PlaceRoom    int64  `bson:"placeRoom"`
-	PlaceCount   int64  `bson:"placeCount"`
+type IAdmin interface {
+	ConfirmPlace(placeId int) (int, error)
+	DeletePlace(placeId int) error
 }
 
-type ConnectBd struct {
-	Database *sqlx.DB
+type IUser interface {
+	CreatePlace() (int, error)
+	RentPlace(placeId int) error
 }
-
-var Connection ConnectBd
-
-type MongoConnect struct {
-	session *mgo.Session
-}
-
-var Mongo MongoConnect
