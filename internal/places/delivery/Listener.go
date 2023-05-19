@@ -5,7 +5,7 @@ import (
 	"golang-pkg/internal/marketplace/delivery/hendlers"
 )
 
-func Hearing(app *fiber.App) error {
+func Hearing(app *fiber.App) {
 	app.Get("/places", hendlers.GetItemById)
 	app.Get("/marketplace", hendlers.GetAll)
 	app.Get("/marketplace/type", hendlers.GetType)
@@ -13,6 +13,4 @@ func Hearing(app *fiber.App) error {
 	app.Post("/marketplace/create_type", hendlers.PostNewType)
 	app.Put("/marketplace/update", hendlers.UpdateById)
 	app.Delete("marketplace/delete", hendlers.DeleteById)
-	app.Listen(":8080")
-	return nil
 }

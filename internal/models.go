@@ -1,8 +1,17 @@
 package internal
 
 import (
+	"github.com/jmoiron/sqlx"
+	"golang-pkg/pkg/logger"
 	"time"
 )
+
+var Tools tools
+
+type tools struct {
+	Connection *sqlx.DB
+	Logger     *logger.ServiceLogger
+}
 
 type User struct {
 	Id         int    `json:"id"`

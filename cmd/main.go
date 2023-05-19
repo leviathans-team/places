@@ -4,13 +4,14 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"golang-pkg/config"
 	models "golang-pkg/internal"
-	"golang-pkg/internal/delivery"
+	"golang-pkg/internal/auth/handlers"
+	"golang-pkg/internal/places/delivery"
 	"golang-pkg/pkg/db"
+	"golang-pkg/pkg/logger"
 	"log"
 )
 
 func main() {
-	var app = fiber.New()
 	viperConf, err := config.LoadConfig()
 	if err != nil {
 		log.Fatal(err)
@@ -19,25 +20,21 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	models.Connection.Database, err = db.InitPsqlDB(conf)
+
+	models.Tools.Logger = logger.NewServiceLogger(conf)
+
+	var app = fiber.New()
+	handlers.SetupRoutes(app)
+	delivery.Hearing(app) // создай группу для сових ручек, в будующем будет проще поддерживать/фиксить/строить код
+
+	err = app.Listen(":3000")
 	if err != nil {
 		log.Fatal(err)
 	}
-	// открываем соединение mongo
-	//session, err := mgo.Dial("mongodb://127.0.0.1")
-	//if err != nil {
-	//	panic(err)
-	//}
-	//defer session.Close()
-	//
-	//// получаем коллекцию
-	//productCollection := session.DB("productdb").C("products")
-	//// критерий выборки
-	//query := bson.M{}
-	//// объект для сохранения результата
-	//products := []Product{}
-	//productCollection.Find(query).All(&products)
 
-	//middleware.InitTables()
-	delivery.Hearing(app)
+	models.Tools.Connection, err = db.InitPsqlDB(conf)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }
