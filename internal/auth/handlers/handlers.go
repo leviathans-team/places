@@ -3,9 +3,11 @@ package handlers
 import (
 	"errors"
 	"github.com/gofiber/fiber/v2"
-	"github.com/mod/internal"
-	"github.com/mod/internal/auth"
-	"github.com/mod/internal/auth/usecase"
+	"golang-pkg/internal"
+	"golang-pkg/internal/auth"
+	"golang-pkg/internal/auth/usecase"
+	"golang-pkg/middleware"
+
 	"time"
 )
 
@@ -19,6 +21,8 @@ func SetupRoutes(app *fiber.App) {
 	o2auth.Post("ok", loginWithOK)
 	o2auth.Post("gos", loginWithGos)
 
+	test := app.Group("/test", middleware.UserIdentification)
+	test.Get("/123", testAuth)
 }
 
 func login(ctx *fiber.Ctx) error {
@@ -41,11 +45,11 @@ func login(ctx *fiber.Ctx) error {
 		return ctx.JSON(errors)
 	}
 
-	err := usecase.SingIn(user)
+	token, err := usecase.SingIn(user)
 	if err.Err != nil {
 		return ctx.JSON(err)
 	}
-	return ctx.JSON(*user)
+	return ctx.JSON(token)
 }
 
 func register(c *fiber.Ctx) error {
@@ -73,6 +77,44 @@ func register(c *fiber.Ctx) error {
 	// ...
 
 	return c.JSON(*user)
+}
+
+func landlordRegister(ctx *fiber.Ctx) error {
+	user := new(auth.BusinessUserForRegister)
+	if err := ctx.BodyParser(user); err != nil {
+		err := internal.HackError{
+			Code:      400,
+			Err:       err,
+			Message:   "",
+			Timestamp: time.Now(),
+		}
+		ctx.Status(err.Code)
+		return ctx.JSON(err)
+	}
+	errors := auth.ValidateStruct(user)
+	if errors != nil {
+		ctx.Status(400)
+		return ctx.JSON(errors)
+	}
+	err := usecase.SingUpBusiness(user)
+	if err.Err != nil {
+		return ctx.JSON(err)
+	}
+	// ...
+	return ctx.JSON(*user)
+}
+
+func setAdmin(ctx *fiber.Ctx) error {
+
+}
+
+func unSetAdmin(ctx *fiber.Ctx) error {
+
+}
+
+func testAuth(ctx *fiber.Ctx) error {
+	ctx.Status(200)
+	return nil
 }
 
 func loginWithGos(ctx *fiber.Ctx) error {
