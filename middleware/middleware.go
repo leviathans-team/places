@@ -38,10 +38,13 @@ func UserIdentification(ctx *fiber.Ctx) error {
 		})
 	}
 
-	userId, err := usecase.ParseToken(headerParts[1])
+	headers, err := usecase.ParseToken(headerParts[1])
 	if err.Err != nil {
 		return ctx.JSON(err)
 	}
-	ctx.Set("userId", strconv.FormatInt(userId, 10))
+	ctx.Set("userId", strconv.FormatInt(headers.UserId, 10))
+	ctx.Set("IsLandLord", strconv.FormatBool(headers.IsLandLord))
+	ctx.Set("IsAdmin", strconv.FormatBool(headers.IsAdmin))
+
 	return nil
 }

@@ -79,6 +79,39 @@ func register(c *fiber.Ctx) error {
 	return c.JSON(*user)
 }
 
+func landlordRegister(ctx *fiber.Ctx) error {
+	user := new(auth.BusinessUserForRegister)
+	if err := ctx.BodyParser(user); err != nil {
+		err := internal.HackError{
+			Code:      400,
+			Err:       err,
+			Message:   "",
+			Timestamp: time.Now(),
+		}
+		ctx.Status(err.Code)
+		return ctx.JSON(err)
+	}
+	errors := auth.ValidateStruct(user)
+	if errors != nil {
+		ctx.Status(400)
+		return ctx.JSON(errors)
+	}
+	err := usecase.SingUpBusiness(user)
+	if err.Err != nil {
+		return ctx.JSON(err)
+	}
+	// ...
+	return ctx.JSON(*user)
+}
+
+func setAdmin(ctx *fiber.Ctx) error {
+
+}
+
+func unSetAdmin(ctx *fiber.Ctx) error {
+
+}
+
 func testAuth(ctx *fiber.Ctx) error {
 	ctx.Status(200)
 	return nil

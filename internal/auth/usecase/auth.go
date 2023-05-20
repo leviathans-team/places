@@ -13,7 +13,6 @@ import (
 )
 
 var (
-	sold      = "eJNJhefjkJKfkjherf"
 	tokenTTL  = 10 * time.Hour
 	singInKey = "rhnJHfjhrgjke8Nihe843Hgherekrr3e4fgrf"
 )
@@ -86,6 +85,48 @@ func SingIn(user *auth.UserForLogin) (string, internal.HackError) {
 	return token, internal.HackError{}
 }
 
+func SingUpBusiness(user *auth.BusinessUserForRegister) internal.HackError {
+	isExist, err := repository.ExistsUser(user.Phone)
+	if err != nil {
+		return internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
+	if isExist {
+		return internal.HackError{
+			Code:      400,
+			Err:       errors.New("invaluable data"),
+			Message:   "the number or email is already taken",
+			Timestamp: time.Now(),
+		}
+	}
+
+	isExist, err = repository.ExistsUser(user.Email)
+	if err != nil {
+		return internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
+	if isExist {
+		return internal.HackError{
+			Code:      400,
+			Err:       errors.New("invaluable data"),
+			Message:   "the number or email is already taken",
+			Timestamp: time.Now(),
+		}
+	}
+
+	hackErr := repository.CreateBusinessUser(user)
+	if hackErr.Err != nil {
+		return hackErr
+	}
+	return internal.HackError{}
+}
+
 func GenerateToken(userId int64) (string, internal.HackError) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &auth.TokenClaims{
 		StandardClaims: jwt.StandardClaims{
@@ -103,7 +144,7 @@ func GenerateToken(userId int64) (string, internal.HackError) {
 	return tokenString, internal.HackError{}
 }
 
-func ParseToken(accessToken string) (int64, internal.HackError) {
+func ParseToken(accessToken string) (*internal.UserHeaders, internal.HackError) {
 	token, err := jwt.ParseWithClaims(accessToken, &auth.TokenClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("invalid signing method")
@@ -113,7 +154,7 @@ func ParseToken(accessToken string) (int64, internal.HackError) {
 	})
 	if err != nil {
 		log.Print("invalid signing method")
-		return -1, internal.HackError{
+		return nil, internal.HackError{
 			Code:      400,
 			Err:       errors.New("invalid signing method"),
 			Timestamp: time.Now(),
@@ -121,12 +162,16 @@ func ParseToken(accessToken string) (int64, internal.HackError) {
 	}
 	claims, ok := token.Claims.(*auth.TokenClaims)
 	if !ok {
-		return -1, internal.HackError{
+		return nil, internal.HackError{
 			Code:      400,
 			Err:       errors.New("token claims are not a type"),
 			Timestamp: time.Now(),
 		}
 	}
 
-	return claims.UserId, internal.HackError{}
+	return &internal.UserHeaders{
+		UserId:     claims.UserId,
+		IsLandLord: claims.IsLandLord,
+		IsAdmin:    claims.IsAdmin,
+	}, internal.HackError{}
 }

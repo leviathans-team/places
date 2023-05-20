@@ -31,12 +31,18 @@ type HackError struct {
 	Timestamp time.Time
 }
 
-type IAdmin interface {
-	ConfirmPlace(placeId int) (int, error)
-	DeletePlace(placeId int) error
+type UserHeaders struct {
+	UserId     int64 `json:"userId"`
+	IsLandLord bool  `json:"isLandLord"`
+	IsAdmin    bool  `json:"isAdmin"`
 }
 
-type IUser interface {
-	CreatePlace() (int, error)
-	RentPlace(placeId int) error
-}
+//type IAdmin interface {
+//	ConfirmPlace(placeId int) (int, error)
+//	DeletePlace(placeId int) error
+//}
+//
+//type IUser interface {
+//	CreatePlace() (int, error)
+//	RentPlace(placeId int) error
+//}
