@@ -1,117 +1,155 @@
 package repository
 
 import (
-	models "golang-pkg/internal"
+	"golang-pkg/internal"
+	placeStruct "golang-pkg/internal/places"
 	"log"
+	"time"
 )
 
-func CreateFilter(body *models.Filter) {
-	models.Connection.Database.QueryRowx(`INSERT INTO filters
+func CreateFilter(body placeStruct.Filter) ([]placeStruct.Filter, internal.HackError) {
+	var filterId int64
+	err := internal.Tools.Connection.QueryRowx(`INSERT INTO filters
 	(filterName)
-	VALUES ($1)`, body.FilterName)
+	VALUES ($1)`, body.FilterName).Scan(&filterId)
+	if err != nil {
+		return []placeStruct.Filter{}, internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
+	return GetAllFilters()
 }
 
-func GetAllFilters() []models.Filter {
-	var result []models.Filter
-	models.Connection.Database.Get(&result, `SELECT * FROM filters`)
-	return result
+func GetAllFilters() ([]placeStruct.Filter, internal.HackError) {
+	var result []placeStruct.Filter
+	err := internal.Tools.Connection.Get(&result, `SELECT * FROM filters`)
+	if err != nil {
+		return []placeStruct.Filter{}, internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
+	return result, internal.HackError{}
 }
 
-//
-//func CreateType(types string) {
-//	marketplace.Connection.Database.QueryRowx(`INSERT INTO types
-//	(producttypes)
-//	VALUES ($1)`, types)
-//}
-//
-//func GetItem(id int) marketplace.Items {
-//	var body marketplace.Items
-//	err := marketplace.Connection.Database.Get(&body, `SELECT * FROM items WHERE item_id = $1`, id)
-//	if err != nil {
-//		log.Println(err)
-//	}
-//	return body
-//}
-//
-//func GetItems(start int, types int) []marketplace.Items {
-//	body := make([]marketplace.Items, 0)
-//	var rows *sqlx.Rows
-//	var err error
-//	var stru marketplace.Items
-//	if types == 0 {
-//		rows, err = marketplace.Connection.Database.Queryx(`SELECT * FROM items`)
-//	} else {
-//		rows, err = marketplace.Connection.Database.Queryx(`SELECT * FROM items WHERE product_type = $1`, types)
-//	}
-//	if err != nil {
-//		log.Println(err)
-//	}
-//	for rows.Next() {
-//
-//		if err := rows.Scan(&stru.Item_id, &stru.Name, &stru.Description, &stru.Photo_id, &stru.Characteristics,
-//			&stru.Price, &stru.Count, &stru.Product_type); err != nil {
-//			log.Println(err)
-//		}
-//		body = append(body, stru)
-//	}
-//	return body
-//
-//}
-//
-//func Del(id int) error {
-//	var err error
-//	_, err = marketplace.Connection.Database.Exec("DELETE FROM items WHERE item_id = $1", id)
-//	return err
-//}
-//
-//func GetTypes() []marketplace.ProductType {
-//	types := make([]marketplace.ProductType, 0)
-//	var stru marketplace.ProductType
-//	rows, err := marketplace.Connection.Database.Queryx(`SELECT * FROM types`)
-//	if err != nil {
-//		log.Println(err)
-//	}
-//	for rows.Next() {
-//
-//		if err := rows.Scan(&stru.Type_id, &stru.Product_types); err != nil {
-//			log.Println(err)
-//		}
-//		types = append(types, stru)
-//	}
-//	//err := marketplace.Connection.Database.Select(&types, `SELECT * FROM types`) // - то же самое что сверху только не работает
-//	//if err != nil {
-//	//	log.Println(err)
-//	//}
-//	return types
-//}
-//
-//func UpdateById(body marketplace.Items) marketplace.Items {
-//	var new marketplace.Items
-//
-//	_, err := marketplace.Connection.Database.Queryx(`UPDATE items SET name = $1, description = $2, photo_id = $3,
-//                 characteristics = $4, price = $5, count = $6, product_type = $7 WHERE item_id = $8`, body.Name,
-//		body.Description, body.Photo_id, body.Characteristics, body.Price, body.Count, body.Product_type,
-//		body.Item_id)
-//	if err != nil {
-//		log.Println(err)
-//	}
-//	marketplace.Connection.Database.Get(&new, `SELECT * FROM items WHERE item_id = $1`, body.Item_id)
-//	return new
-//}
+func CreatePlace(body placeStruct.Place) (placeStruct.Place, internal.HackError) {
+	var placeId int64
+	err := internal.Tools.Connection.QueryRowx(`INSERT INTO places
+    (placeName, filterId, placeAddress, workingTime, telephoneNumber, email, site, placeServices, totalSquare, workingSquare,
+     commonObjects, equipment, rentersCount, meta) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) returning placeId`, body.PlaceName,
+		body.FilterId, body.PlaceAddress, body.WorkingTime, body.TelephoneNumber, body.Email, body.Site, body.PlaceServices,
+		body.TotalSquare, body.WorkingSquare, body.CommonObjects, body.Equipment, body.RentersCount, body.Meta).Scan(&placeId)
+	if err != nil {
+		log.Println(err)
+		return placeStruct.Place{}, internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
+	return GetOnePlace(placeId)
+}
 
-func InitTables() error {
-	_, err := models.Connection.Database.Exec(`CREATE TABLE filters (
+func GetOnePlace(placeId int64) (placeStruct.Place, internal.HackError) {
+	var body placeStruct.Place
+	err := internal.Tools.Connection.Get(&body, `SELECT * FROM places WHERE placeId = $1`, placeId)
+	if err != nil {
+		return placeStruct.Place{}, internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
+	return body, internal.HackError{}
+}
+
+func CreateCalendarNote(body placeStruct.Calendar) ([]placeStruct.Calendar, internal.HackError) {
+	var bookId int64
+	err := internal.Tools.Connection.QueryRowx(`INSERT INTO calendar
+(placeId, timeFrom, timeTo, userId) VALUES($1, $2, $3, $4) returning bookId`, body.PlaceId, body.TimeFrom, body.TimeTo, body.UserId).Scan(&bookId)
+	if err != nil {
+		return []placeStruct.Calendar{}, internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
+	return GetPlaceBookInfo(body.PlaceId)
+}
+
+func GetPlaceBookInfo(placeId int64) ([]placeStruct.Calendar, internal.HackError) {
+	var result []placeStruct.Calendar
+	err := internal.Tools.Connection.Get(&result, `SELECT * FROM calendar WHERE placeId = $1`, placeId)
+	if err != nil {
+		return []placeStruct.Calendar{}, internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
+	return result, internal.HackError{}
+}
+
+func InitTables() internal.HackError {
+	_, err := internal.Tools.Connection.Exec(`CREATE TABLE filters (
     	filterId BIGSERIAL PRIMARY KEY NOT NULL ,
-    	filterName TEXT NOT NULL ,
+    	filterName TEXT NOT NULL
 		);`)
 	if err != nil {
 		log.Println(err)
+		return internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
 	}
-	return err
+	_, err = internal.Tools.Connection.Exec(`CREATE TABLE places (
+    placeId BIGSERIAL PRIMARY KEY NOT NULL,
+    placeName TEXT NOT NULL,
+    filterId BIGINT NOT NULL,
+    placeAddress TEXT NOT NULL,
+    workingTime TEXT NOT NULL ,
+    telephoneNumber TEXT NOT NULL ,
+    email TEXT NOT NULL ,
+    site TEXT NOT NULL ,
+    placeServices TEXT NOT NULL ,
+    totalSquare FLOAT NOT NULL , 
+    workingSquare FLOAT NOT NULL ,
+    commonObjects TEXT NOT NULL , 
+    equipment TEXT NOT NULL , 
+    rentersCount INTEGER NOT NULL , 
+    meta TEXT[] NOT NULL );`)
+	if err != nil {
+		log.Println(err)
+		return internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
+	_, err = internal.Tools.Connection.Exec(`CREATE TABLE calendar (
+    	bookId BIGSERIAL PRIMARY KEY NOT NULL ,
+    	placeId BIGINT NOT NULL ,
+    	timeFrom DATE NOT NULL,
+    	timeTo DATE NOT NULL ,
+    	userId BIGINT NOT NULL
+		);`)
+	if err != nil {
+		log.Println(err)
+		return internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
+	return internal.HackError{}
 }
 
 func DropTable() error {
-	_, err := models.Connection.Database.Exec(`DROP TABLE filters`)
+	_, err := internal.Tools.Connection.Exec(`DROP TABLE filters, places, calendar`)
 	if err != nil {
 		log.Println(err)
 	}
