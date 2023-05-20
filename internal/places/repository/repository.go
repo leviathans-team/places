@@ -93,6 +93,55 @@ func GetPlaceBookInfo(placeId int64) ([]placeStruct.Calendar, internal.HackError
 	return result, internal.HackError{}
 }
 
+func GetPlaces(filterId int, date string) ([]placeStruct.Place, internal.HackError) {
+	var result []placeStruct.Place
+	var body placeStruct.Place
+	var placesId []int64
+	if date != "" {
+		err := internal.Tools.Connection.Get(&placesId, `SELECT placeId FROM calendar WHERE NOT(timeFrom < $1 and timeTo > $1)`, date)
+		if err != nil {
+			return []placeStruct.Place{}, internal.HackError{
+				Code:      500,
+				Err:       err,
+				Timestamp: time.Now(),
+			}
+		}
+	} else {
+		err := internal.Tools.Connection.Get(&placesId, `SELECT placeId FROM calendar`)
+		if err != nil {
+			return []placeStruct.Place{}, internal.HackError{
+				Code:      500,
+				Err:       err,
+				Timestamp: time.Now(),
+			}
+		}
+	}
+	for i, _ := range placesId {
+		if filterId != 0 {
+			err := internal.Tools.Connection.Get(&body, `SELECT * FROM places WHERE placeId = &1 and filterId = $2`, placesId[i], filterId)
+			if err != nil {
+				return []placeStruct.Place{}, internal.HackError{
+					Code:      500,
+					Err:       err,
+					Timestamp: time.Now(),
+				}
+			}
+			result = append(result, body)
+		} else {
+			err := internal.Tools.Connection.Get(&body, `SELECT * FROM places WHERE placeId = &1`, placesId[i])
+			if err != nil {
+				return []placeStruct.Place{}, internal.HackError{
+					Code:      500,
+					Err:       err,
+					Timestamp: time.Now(),
+				}
+			}
+			result = append(result, body)
+		}
+	}
+	return result, internal.HackError{}
+}
+
 func InitTables() internal.HackError {
 	_, err := internal.Tools.Connection.Exec(`CREATE TABLE filters (
     	filterId BIGSERIAL PRIMARY KEY NOT NULL ,

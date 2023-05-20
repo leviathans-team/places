@@ -21,6 +21,7 @@ func GetAllFilters(ctx *fiber.Ctx) error {
 }
 
 // Создаю новый фильтр и возвращаю обновленный список фильров
+// Нужна валидация на ADmin
 func CreateFilter(ctx *fiber.Ctx) error {
 	var body placeStruct.Filter
 	if err := ctx.BodyParser(body); err != nil {
@@ -35,18 +36,44 @@ func CreateFilter(ctx *fiber.Ctx) error {
 	return ctx.JSON(result)
 }
 
+// Создание нового места
+// Надо докрутить валидацию на landlord и передачу Алмазу
 func CreatePlace(ctx *fiber.Ctx) error {
+	var body placeStruct.Place
+	err := ctx.BodyParser(&body)
+	if err != nil {
+		ctx.Status(400)
+		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
+	}
+	body, creationErr := usecase.CreatePlace(body)
+	if creationErr.Err != nil {
+		ctx.Status(creationErr.Code)
+		return ctx.JSON(creationErr)
+	}
+	return ctx.JSON(body)
 
 }
 
 func GetPlaces(ctx *fiber.Ctx) error {
 	headers := ctx.GetReqHeaders()
-	key := headers["filterId"]
-	filterId, err := strconv.Atoi(key)
-	if err != nil {
-		log.Println(err)
+	filter := headers["filterId"]
+	date := headers["date"]
+	filterId := 0
+	var err error
+	if filter != "" {
+		filterId, err = strconv.Atoi(filter)
+		if err != nil {
+			ctx.Status(400)
+			return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
+		}
 	}
-	return ctx.JSON(usecase.GetPlaces(filterId))
+
+	body, creationErr := usecase.GetPlaces(filterId, date)
+	if creationErr.Err != nil {
+		ctx.Status(creationErr.Code)
+		return ctx.JSON(creationErr)
+	}
+	return ctx.JSON(body)
 }
 
 func GetOnePlace(ctx *fiber.Ctx) error {
