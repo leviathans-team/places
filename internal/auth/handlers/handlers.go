@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"golang-pkg/internal"
 	"golang-pkg/internal/auth"
@@ -11,10 +12,11 @@ import (
 	"time"
 )
 
-func SetupRoutes(app *fiber.App) {
+func SetupRoutesForAuth(app *fiber.App) {
 	api := app.Group("/user")
 	api.Post("/login", login)
 	api.Post("/register", register)
+	api.Post("/businessRegister", landlordRegister)
 
 	o2auth := api.Group("/o2auth")
 	o2auth.Post("vk", loginWithVK)
@@ -23,6 +25,8 @@ func SetupRoutes(app *fiber.App) {
 
 	test := app.Group("/test", middleware.UserIdentification)
 	test.Get("/123", testAuth)
+	test.Get("/124", testAuth2)
+
 }
 
 func login(ctx *fiber.Ctx) error {
@@ -32,7 +36,7 @@ func login(ctx *fiber.Ctx) error {
 		err := internal.HackError{
 			Code:      400,
 			Err:       err,
-			Message:   "",
+			Message:   "Can't parse json-body",
 			Timestamp: time.Now(),
 		}
 		ctx.Status(err.Code)
@@ -58,7 +62,7 @@ func register(c *fiber.Ctx) error {
 		err := internal.HackError{
 			Code:      400,
 			Err:       err,
-			Message:   "",
+			Message:   "Can't parse json-body",
 			Timestamp: time.Now(),
 		}
 		c.Status(err.Code)
@@ -85,7 +89,7 @@ func landlordRegister(ctx *fiber.Ctx) error {
 		err := internal.HackError{
 			Code:      400,
 			Err:       err,
-			Message:   "",
+			Message:   "Can't parse json-body",
 			Timestamp: time.Now(),
 		}
 		ctx.Status(err.Code)
@@ -104,16 +108,14 @@ func landlordRegister(ctx *fiber.Ctx) error {
 	return ctx.JSON(*user)
 }
 
-func setAdmin(ctx *fiber.Ctx) error {
-
-}
-
-func unSetAdmin(ctx *fiber.Ctx) error {
-
-}
-
 func testAuth(ctx *fiber.Ctx) error {
 	ctx.Status(200)
+	return nil
+}
+
+func testAuth2(ctx *fiber.Ctx) error {
+	ctx.Status(200)
+	fmt.Print(ctx.GetRespHeaders())
 	return nil
 }
 

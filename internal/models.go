@@ -34,7 +34,7 @@ type HackError struct {
 type UserHeaders struct {
 	UserId     int64 `json:"userId"`
 	IsLandLord bool  `json:"isLandLord"`
-	IsAdmin    bool  `json:"isAdmin"`
+	AdminLevel int64 `json:"isAdmin"`
 }
 
 //type IAdmin interface {

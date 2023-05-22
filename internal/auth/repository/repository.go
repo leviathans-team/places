@@ -81,8 +81,8 @@ values ($1, $2, $3, $4, $5) returning user_id`, user.Name, user.Surname, user.Pa
 		}
 	}
 
-	_, err = internal.Tools.Connection.Exec(`insert into landlords (user_id, post, places, legal_entity, inn)
-values ($1,$2,$3,$4,$5)`, userId, user.Post, user.LegalEntity, user.INN)
+	_, err = internal.Tools.Connection.Exec(`insert into landlords (user_id, post, legal_entity, inn)
+values ($1,$2,$3,$4)`, userId, user.Post, user.LegalEntity, user.INN)
 	if err != nil {
 		log.Print(err)
 		return internal.HackError{

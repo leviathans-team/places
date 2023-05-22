@@ -35,7 +35,7 @@ func main() {
 	//кваврп
 
 	var app = fiber.New()
-	handlers.SetupRoutes(app)
+	handlers.SetupRoutesForAuth(app)
 	delivery.Hearing(app) // создай группу для сових ручек, в будующем будет проще поддерживать/фиксить/строить код
 
 	err = app.Listen(":3000")

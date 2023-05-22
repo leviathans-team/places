@@ -32,5 +32,5 @@ type TokenClaims struct {
 	jwt.StandardClaims
 	UserId     int64 `json:"userId"`
 	IsLandLord bool  `json:"isLandLord"`
-	IsAdmin    bool  `json:"isAdmin"`
+	AdminLevel int64 `json:"isAdmin"`
 }

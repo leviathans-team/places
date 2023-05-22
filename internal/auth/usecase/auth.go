@@ -172,6 +172,6 @@ func ParseToken(accessToken string) (*internal.UserHeaders, internal.HackError) 
 	return &internal.UserHeaders{
 		UserId:     claims.UserId,
 		IsLandLord: claims.IsLandLord,
-		IsAdmin:    claims.IsAdmin,
+		AdminLevel: claims.AdminLevel,
 	}, internal.HackError{}
 }
