@@ -86,7 +86,8 @@ func CreateOrder(body placeStruct.Calendar) ([]placeStruct.Calendar, internal.Ha
 
 func GetPlaceBookInfo(placeId int64) ([]placeStruct.Calendar, internal.HackError) {
 	var result []placeStruct.Calendar
-	err := internal.Tools.Connection.Get(&result, `SELECT * FROM calendar WHERE placeId = $1`, placeId)
+	var tmp placeStruct.Calendar
+	rows, err := internal.Tools.Connection.Queryx(`SELECT * FROM calendar WHERE placeId = $1`, placeId)
 	if err != nil {
 		log.Println(err)
 		return []placeStruct.Calendar{}, internal.HackError{
@@ -95,6 +96,18 @@ func GetPlaceBookInfo(placeId int64) ([]placeStruct.Calendar, internal.HackError
 			Timestamp: time.Now(),
 		}
 	}
+	for rows.Next() {
+		if err = rows.StructScan(&tmp); err != nil {
+			log.Println(err)
+			return []placeStruct.Calendar{}, internal.HackError{
+				Code:      500,
+				Err:       err,
+				Timestamp: time.Now(),
+			}
+		}
+		result = append(result, tmp)
+	}
+
 	return result, internal.HackError{}
 }
 
@@ -104,6 +117,49 @@ func DeletePlace(placeId int64) internal.HackError {
 		return internal.HackError{Code: 500, Err: err, Timestamp: time.Now()}
 	}
 	return internal.HackError{}
+}
+
+func UpdatePlace(body placeStruct.Place) internal.HackError {
+	_, err := internal.Tools.Connection.Exec(`UPDATE places SET placeName = $2, filterId = $3, placeAddress = $4, workingTime = $5, 
+                  telephoneNumber = $6, email = $7, site = $8, placeServices = $9, 
+                  totalSquare = $10, workingSquare = $11, commonObjects = $12, 
+                  equipment = $13, rentersCount = $14, meta = $15 WHERE placeId = $1`,
+		body.PlaceId, body.PlaceName, body.FilterId, body.PlaceAddress, body.WorkingTime, body.TelephoneNumber,
+		body.Email, body.Site, body.PlaceServices, body.TotalSquare, body.WorkingSquare, body.CommonObjects,
+		body.Equipment, body.RentersCount, body.Meta)
+
+	if err != nil {
+		return internal.HackError{Code: 500, Err: err, Timestamp: time.Now()}
+	}
+	return internal.HackError{}
+}
+
+func SearchPlace(key string) ([]placeStruct.Place, internal.HackError) {
+	var result []placeStruct.Place
+	var tmp placeStruct.Place
+
+	rows, err := internal.Tools.Connection.Queryx(`SELECT * FROM places WHERE placeName LIKE $1`, "%"+key+"%")
+	if err != nil {
+		return []placeStruct.Place{}, internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
+
+	for rows.Next() {
+		if err = rows.StructScan(&tmp); err != nil {
+			log.Println(err)
+			return []placeStruct.Place{}, internal.HackError{
+				Code:      500,
+				Err:       err,
+				Timestamp: time.Now(),
+			}
+		}
+		result = append(result, tmp)
+	}
+
+	return result, internal.HackError{}
 }
 
 func DeleteFilter(filterId int64) internal.HackError {
