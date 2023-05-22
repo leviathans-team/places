@@ -11,15 +11,15 @@ import (
 )
 
 func SetupRoutesForAuth(app *fiber.App) {
-	commonUser := app.Group("")
-
-	businessUser := app.Group("")
+	//commonUser := app.Group("")
+	//
+	//businessUser := app.Group("")
 
 	admin := app.Group("/admin")
 	admin.Put("/setAdmin", setAdmin)
-	admin.Put("/setAdmin", unSetAdmin)
-	admin.Put("/setAdmin", deleteProfile)
-	admin.Put("/setAdmin", deleteAdminProfile)
+	//admin.Put("/setAdmin", unSetAdmin)
+	//admin.Put("/setAdmin", deleteProfile)
+	//admin.Put("/setAdmin", deleteAdminProfile)
 
 }
 
@@ -58,14 +58,14 @@ func setAdmin(ctx *fiber.Ctx) error {
 	return nil
 }
 
-func unSetAdmin(ctx *fiber.Ctx) error {
-
-}
-
-func deleteProfile(ctx *fiber.Ctx) error {
-
-}
-
-func deleteAdminProfile(ctx *fiber.Ctx) error {
-
-}
+//func unSetAdmin(ctx *fiber.Ctx) error {
+//
+//}
+//
+//func deleteProfile(ctx *fiber.Ctx) error {
+//
+//}
+//
+//func deleteAdminProfile(ctx *fiber.Ctx) error {
+//
+//}
