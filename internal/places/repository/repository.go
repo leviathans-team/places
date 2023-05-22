@@ -98,6 +98,22 @@ func GetPlaceBookInfo(placeId int64) ([]placeStruct.Calendar, internal.HackError
 	return result, internal.HackError{}
 }
 
+func DeletePlace(placeId int64) internal.HackError {
+	_, err := internal.Tools.Connection.Exec("DELETE FROM places WHERE placeId = $1", placeId)
+	if err != nil {
+		return internal.HackError{Code: 500, Err: err, Timestamp: time.Now()}
+	}
+	return internal.HackError{}
+}
+
+func DeleteFilter(filterId int64) internal.HackError {
+	_, err := internal.Tools.Connection.Exec("DELETE FROM filters WHERE filterId = $1", filterId)
+	if err != nil {
+		return internal.HackError{Code: 500, Err: err, Timestamp: time.Now()}
+	}
+	return internal.HackError{}
+}
+
 func GetPlaces(filterId int, date string) ([]placeStruct.Place, internal.HackError) {
 	var result []placeStruct.Place
 	var body placeStruct.Place
@@ -151,7 +167,7 @@ func GetPlaces(filterId int, date string) ([]placeStruct.Place, internal.HackErr
 	return result, internal.HackError{}
 }
 
-func InitTables() internal.HackError {
+func InitPlaceTables() internal.HackError {
 	_, err := internal.Tools.Connection.Exec(`CREATE TABLE filters (
     	filterId BIGSERIAL PRIMARY KEY NOT NULL ,
     	filterName TEXT NOT NULL

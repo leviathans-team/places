@@ -25,3 +25,11 @@ func GetPlaces(filterId int, date string) ([]placeStruct.Place, internal.HackErr
 func GetOnePlace(placeId int64) (placeStruct.Place, internal.HackError) {
 	return repository.GetOnePlace(placeId)
 }
+
+func DeletePlace(placeId int64) internal.HackError {
+	return repository.DeletePlace(placeId)
+}
+
+func DeleteFilter(filterId int64) internal.HackError {
+	return repository.DeleteFilter(filterId)
+}

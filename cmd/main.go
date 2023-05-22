@@ -6,6 +6,7 @@ import (
 	models "golang-pkg/internal"
 	"golang-pkg/internal/auth/handlers"
 	"golang-pkg/internal/places/delivery"
+	"golang-pkg/internal/places/repository"
 	"golang-pkg/pkg/db"
 	"golang-pkg/pkg/logger"
 	"log"
@@ -36,8 +37,9 @@ func main() {
 
 	var app = fiber.New()
 	handlers.SetupRoutesForAuth(app)
-	delivery.Hearing(app) // создай группу для сових ручек, в будующем будет проще поддерживать/фиксить/строить код
 
+	delivery.Hearing(app) // создай группу для сових ручек, в будующем будет проще поддерживать/фиксить/строить код
+	repository.InitPlaceTables()
 	err = app.Listen(":3000")
 	if err != nil {
 		log.Fatal(err)
