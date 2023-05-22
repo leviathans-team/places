@@ -4,8 +4,6 @@ import (
 	"golang-pkg/internal"
 	placeStruct "golang-pkg/internal/places"
 	"golang-pkg/internal/places/repository"
-	"log"
-	"strconv"
 	"time"
 )
 
@@ -21,25 +19,8 @@ func CreatePlace(body placeStruct.Place) (placeStruct.Place, internal.HackError)
 	return repository.CreatePlace(body)
 }
 
-func GetPlaces(filter string, date string, page string) ([]placeStruct.Place, internal.HackError) {
-	pageNumber := 0
-	filterId := 0
-	var err error
-	if filter != "" {
-		filterId, err = strconv.Atoi(filter)
-		if err != nil {
-			log.Println(err)
-			return []placeStruct.Place{}, internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
-		}
-	}
-	if page != "" {
-		pageNumber, err = strconv.Atoi(filter)
-		if err != nil {
-			log.Println(err)
-			return []placeStruct.Place{}, internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
-		}
-	}
-	return repository.GetPlaces(filterId, date, pageNumber)
+func GetPlaces(filterId int, date time.Time) ([]placeStruct.Place, internal.HackError) {
+	return repository.GetPlaces(filterId, date, 1)
 }
 
 func GetOnePlace(placeId int64) (placeStruct.Place, internal.HackError) {

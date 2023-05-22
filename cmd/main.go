@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/template/html"
 	"golang-pkg/config"
 	models "golang-pkg/internal"
 	"golang-pkg/internal/auth/handlers"
@@ -35,7 +36,12 @@ func main() {
 	}
 	//кваврп
 
-	var app = fiber.New()
+	engine := html.New("./views", ".html")
+
+	app := fiber.New(fiber.Config{
+		Views: engine,
+	})
+
 	handlers.SetupRoutesForAuth(app)
 
 	delivery.Hearing(app) // создай группу для сових ручек, в будующем будет проще поддерживать/фиксить/строить код

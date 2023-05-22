@@ -122,12 +122,13 @@ func CancelOrder(orderId int64) internal.HackError {
 	return internal.HackError{}
 }
 
-func GetPlaces(filterId int, date string, pageNumber int) ([]placeStruct.Place, internal.HackError) {
+func GetPlaces(filterId int, date time.Time, pageNumber int) ([]placeStruct.Place, internal.HackError) {
 	var result []placeStruct.Place
 	var body placeStruct.Place
 	var placesId []int64
-	if date != "" {
-		err := internal.Tools.Connection.Get(&placesId, `SELECT placeId FROM calendar WHERE NOT(timeFrom < $1 and timeTo > $1)`, date)
+	var tmp int64
+	if !date.IsZero() {
+		rows, err := internal.Tools.Connection.Queryx(`SELECT placeId FROM calendar WHERE timeFrom < $1 and timeTo > $1`, date)
 		if err != nil {
 			log.Println(err)
 			return []placeStruct.Place{}, internal.HackError{
@@ -136,8 +137,16 @@ func GetPlaces(filterId int, date string, pageNumber int) ([]placeStruct.Place, 
 				Timestamp: time.Now(),
 			}
 		}
+
+		for rows.Next() {
+			if err = rows.Scan(&tmp); err != nil {
+				log.Println(err)
+			}
+			placesId = append(placesId, tmp)
+		}
+
 	} else {
-		err := internal.Tools.Connection.Get(&placesId, `SELECT placeId FROM calendar`)
+		rows, err := internal.Tools.Connection.Queryx(`SELECT placeId FROM calendar`)
 		if err != nil {
 			log.Println(err)
 			return []placeStruct.Place{}, internal.HackError{
@@ -146,7 +155,15 @@ func GetPlaces(filterId int, date string, pageNumber int) ([]placeStruct.Place, 
 				Timestamp: time.Now(),
 			}
 		}
+		for rows.Next() {
+			if err = rows.Scan(&tmp); err != nil {
+				log.Println(err)
+			}
+			placesId = append(placesId, tmp)
+		}
+
 	}
+
 	lim := 0
 	if pageNumber*10 > len(placesId) {
 		lim = len(placesId)
@@ -156,7 +173,7 @@ func GetPlaces(filterId int, date string, pageNumber int) ([]placeStruct.Place, 
 
 	for i := pageNumber*10 - 10; i < lim; i++ {
 		if filterId != 0 {
-			err := internal.Tools.Connection.Get(&body, `SELECT * FROM places WHERE placeId = &1 and filterId = $2`, placesId[i], filterId)
+			err := internal.Tools.Connection.Get(&body, `SELECT * FROM places WHERE placeId = $1 and filterId = $2`, placesId[i], filterId)
 			if err != nil {
 				log.Println(err)
 				return []placeStruct.Place{}, internal.HackError{
@@ -167,7 +184,7 @@ func GetPlaces(filterId int, date string, pageNumber int) ([]placeStruct.Place, 
 			}
 			result = append(result, body)
 		} else {
-			err := internal.Tools.Connection.Get(&body, `SELECT * FROM places WHERE placeId = &1`, placesId[i])
+			err := internal.Tools.Connection.Get(&body, `SELECT * FROM places WHERE placeId = $1`, placesId[i])
 			if err != nil {
 				log.Println(err)
 				return []placeStruct.Place{}, internal.HackError{

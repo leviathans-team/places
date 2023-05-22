@@ -3,11 +3,11 @@ package delivery
 import (
 	"github.com/gofiber/fiber/v2"
 	"golang-pkg/internal/places/delivery/hendlers"
-	"golang-pkg/middleware"
 )
 
 func Hearing(app *fiber.App) {
-	myGroup := app.Group("/place", middleware.UserIdentification)
+	//myGroup := app.Group("/place", middleware.UserIdentification)
+	myGroup := app.Group("/place")
 	myGroup.Get("/chooseFilter", hendlers.GetAllFilters)
 	myGroup.Get("", hendlers.GetPlaces)
 	myGroup.Get("/curent", hendlers.GetOnePlace)

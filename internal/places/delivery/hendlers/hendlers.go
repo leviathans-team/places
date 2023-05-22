@@ -61,18 +61,36 @@ func CreatePlace(ctx *fiber.Ctx) error {
 
 // Возвращает все места с учетом фильтра и с учетом даты
 func GetPlaces(ctx *fiber.Ctx) error {
+	var err error
 	headers := ctx.GetReqHeaders()
-	filter := headers["filterId"]
-	date := headers["date"]
-	page := headers["page"]
+	filter := headers["Filterid"]
+	date, err := time.Parse("2006-01-02 15:04:05", headers["Date"])
+	if err != nil {
+		log.Println(err)
+		ctx.Status(400)
+		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
+	}
+	filterId := 0
 
-	body, repError := usecase.GetPlaces(filter, date, page)
+	if filter != "" {
+		filterId, err = strconv.Atoi(filter)
+		if err != nil {
+			log.Println(err)
+			ctx.Status(400)
+			return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
+		}
+	}
+
+	body, repError := usecase.GetPlaces(filterId, date)
+
 	if repError.Err != nil {
-		log.Println(repError.Err)
+		log.Println(err)
 		ctx.Status(repError.Code)
 		return ctx.JSON(repError)
 	}
-	return ctx.JSON(body)
+	return ctx.Render("places", fiber.Map{
+		"Places": body,
+	})
 }
 
 // отдаю одно конкретное место по id
@@ -90,7 +108,9 @@ func GetOnePlace(ctx *fiber.Ctx) error {
 		ctx.Status(repError.Code)
 		return ctx.JSON(repError)
 	}
-	return ctx.JSON(body)
+	return ctx.Render("place", fiber.Map{
+		"Place": body,
+	})
 }
 
 func DeletePlace(ctx *fiber.Ctx) error {
