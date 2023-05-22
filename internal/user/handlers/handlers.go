@@ -58,14 +58,14 @@ func setAdmin(ctx *fiber.Ctx) error {
 	return nil
 }
 
-func unSetAdmin(ctx *fiber.Ctx) error {
-
-}
-
-func deleteProfile(ctx *fiber.Ctx) error {
-
-}
-
-func deleteAdminProfile(ctx *fiber.Ctx) error {
-
-}
+//func unSetAdmin(ctx *fiber.Ctx) error {
+//
+//}
+//
+//func deleteProfile(ctx *fiber.Ctx) error {
+//
+//}
+//
+//func deleteAdminProfile(ctx *fiber.Ctx) error {
+//
+//}
