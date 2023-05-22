@@ -14,6 +14,7 @@ import (
 func GetAllFilters(ctx *fiber.Ctx) error {
 	body, err := usecase.GetFilters()
 	if err.Err != nil {
+		log.Println(err)
 		ctx.Status(err.Code)
 		return ctx.JSON(err)
 	}
@@ -25,11 +26,13 @@ func GetAllFilters(ctx *fiber.Ctx) error {
 func CreateFilter(ctx *fiber.Ctx) error {
 	var body placeStruct.Filter
 	if err := ctx.BodyParser(body); err != nil {
+		log.Println(err)
 		ctx.Status(400)
 		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
 	}
 	result, err := usecase.CreateFilter(body)
 	if err.Err != nil {
+		log.Println(err)
 		ctx.Status(err.Code)
 		return ctx.JSON(err)
 	}
@@ -42,11 +45,13 @@ func CreatePlace(ctx *fiber.Ctx) error {
 	var body placeStruct.Place
 	err := ctx.BodyParser(&body)
 	if err != nil {
+		log.Println(err)
 		ctx.Status(400)
 		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
 	}
 	body, creationErr := usecase.CreatePlace(body)
 	if creationErr.Err != nil {
+		log.Println(err)
 		ctx.Status(creationErr.Code)
 		return ctx.JSON(creationErr)
 	}
@@ -54,6 +59,7 @@ func CreatePlace(ctx *fiber.Ctx) error {
 
 }
 
+// Возвращает все места с учетом фильтра и с учетом даты
 func GetPlaces(ctx *fiber.Ctx) error {
 	headers := ctx.GetReqHeaders()
 	filter := headers["filterId"]
@@ -63,24 +69,35 @@ func GetPlaces(ctx *fiber.Ctx) error {
 	if filter != "" {
 		filterId, err = strconv.Atoi(filter)
 		if err != nil {
+			log.Println(err)
 			ctx.Status(400)
 			return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
 		}
 	}
 
-	body, creationErr := usecase.GetPlaces(filterId, date)
-	if creationErr.Err != nil {
-		ctx.Status(creationErr.Code)
-		return ctx.JSON(creationErr)
+	body, repError := usecase.GetPlaces(filterId, date)
+	if repError.Err != nil {
+		log.Println(err)
+		ctx.Status(repError.Code)
+		return ctx.JSON(repError)
 	}
 	return ctx.JSON(body)
 }
 
+// отдаю одно конкретное место по id
 func GetOnePlace(ctx *fiber.Ctx) error {
 	key := ctx.Query("placeId")
-	placeId, err := strconv.Atoi(key)
+	placeId, err := strconv.ParseInt(key, 10, 64)
 	if err != nil {
 		log.Println(err)
+		ctx.Status(400)
+		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
 	}
-	return ctx.JSON(usecase.GetOnePlace(placeId))
+	body, repError := usecase.GetOnePlace(placeId)
+	if repError.Err != nil {
+		log.Println(err)
+		ctx.Status(repError.Code)
+		return ctx.JSON(repError)
+	}
+	return ctx.JSON(body)
 }

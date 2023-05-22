@@ -21,3 +21,7 @@ func CreatePlace(body placeStruct.Place) (placeStruct.Place, internal.HackError)
 func GetPlaces(filterId int, date string) ([]placeStruct.Place, internal.HackError) {
 	return repository.GetPlaces(filterId, date)
 }
+
+func GetOnePlace(placeId int64) (placeStruct.Place, internal.HackError) {
+	return repository.GetOnePlace(placeId)
+}
