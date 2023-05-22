@@ -5,13 +5,6 @@ Postgres:
   port: "5431"
   dbName: "postgres"
 
-Mongo:
-  user: "admin"
-  password: "admin"
-  host: "localhost"
-  port: "5432"
-  dbName: "postgres"
-
 System:
   service_name: "test-pkg"
   fernet_key: "fcGak6T093fEjAfd4c291IlTSVFAeLnr-e58ZcJo3Ok=" # https://8gwifi.org/CipherFunctionality
