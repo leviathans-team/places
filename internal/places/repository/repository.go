@@ -69,7 +69,7 @@ func GetOnePlace(placeId int64) (placeStruct.Place, internal.HackError) {
 	return body, internal.HackError{}
 }
 
-func CreateCalendarNote(body placeStruct.Calendar) ([]placeStruct.Calendar, internal.HackError) {
+func CreateOrder(body placeStruct.Calendar) ([]placeStruct.Calendar, internal.HackError) {
 	var bookId int64
 	err := internal.Tools.Connection.QueryRowx(`INSERT INTO calendar
 (placeId, timeFrom, timeTo, userId) VALUES($1, $2, $3, $4) returning bookId`, body.PlaceId, body.TimeFrom, body.TimeTo, body.UserId).Scan(&bookId)

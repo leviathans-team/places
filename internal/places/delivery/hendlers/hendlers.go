@@ -65,6 +65,7 @@ func GetPlaces(ctx *fiber.Ctx) error {
 	headers := ctx.GetReqHeaders()
 	filter := headers["Filterid"]
 	date, err := time.Parse("2006-01-02 15:04:05", headers["Date"])
+	page := headers["Page"]
 	if err != nil {
 		log.Println(err)
 		ctx.Status(400)
@@ -80,8 +81,16 @@ func GetPlaces(ctx *fiber.Ctx) error {
 			return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
 		}
 	}
-
-	body, repError := usecase.GetPlaces(filterId, date)
+	pageNumber := 0
+	if page != "" {
+		pageNumber, err = strconv.Atoi(filter)
+		if err != nil {
+			log.Println(err)
+			ctx.Status(400)
+			return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
+		}
+	}
+	body, repError := usecase.GetPlaces(filterId, date, pageNumber)
 
 	if repError.Err != nil {
 		log.Println(err)

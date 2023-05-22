@@ -4,6 +4,8 @@ import (
 	"golang-pkg/internal"
 	placeStruct "golang-pkg/internal/places"
 	"golang-pkg/internal/places/repository"
+	"log"
+	"strconv"
 	"time"
 )
 
@@ -19,8 +21,8 @@ func CreatePlace(body placeStruct.Place) (placeStruct.Place, internal.HackError)
 	return repository.CreatePlace(body)
 }
 
-func GetPlaces(filterId int, date time.Time) ([]placeStruct.Place, internal.HackError) {
-	return repository.GetPlaces(filterId, date, 1)
+func GetPlaces(filterId int, date time.Time, page int) ([]placeStruct.Place, internal.HackError) {
+	return repository.GetPlaces(filterId, date, page)
 }
 
 func GetOnePlace(placeId int64) (placeStruct.Place, internal.HackError) {
