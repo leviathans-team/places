@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type Filter struct {
 	FilterId   int64  `json:"filterId"`
 	FilterName string `json:"filterName"`
@@ -24,9 +26,9 @@ type Place struct {
 }
 
 type Calendar struct {
-	BookId   int64  `json:"bookId"`
-	PlaceId  int64  `json:"placeId"`
-	TimeFrom string `json:"timeFrom"`
-	TimeTo   string `json:"timeTo"`
-	UserId   int64  `json:"userId"`
+	BookId   int64     `json:"bookId"`
+	PlaceId  int64     `json:"placeId"`
+	TimeFrom time.Time `json:"timeFrom"`
+	TimeTo   time.Time `json:"timeTo"`
+	UserId   int64     `json:"userId"`
 }

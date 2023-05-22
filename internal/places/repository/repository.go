@@ -114,7 +114,15 @@ func DeleteFilter(filterId int64) internal.HackError {
 	return internal.HackError{}
 }
 
-func GetPlaces(filterId int, date string) ([]placeStruct.Place, internal.HackError) {
+func CancelOrder(orderId int64) internal.HackError {
+	_, err := internal.Tools.Connection.Exec("DELETE FROM calendar WHERE bookId = $1", orderId)
+	if err != nil {
+		return internal.HackError{Code: 500, Err: err, Timestamp: time.Now()}
+	}
+	return internal.HackError{}
+}
+
+func GetPlaces(filterId int, date string, pageNumber int) ([]placeStruct.Place, internal.HackError) {
 	var result []placeStruct.Place
 	var body placeStruct.Place
 	var placesId []int64
@@ -139,7 +147,14 @@ func GetPlaces(filterId int, date string) ([]placeStruct.Place, internal.HackErr
 			}
 		}
 	}
-	for i, _ := range placesId {
+	lim := 0
+	if pageNumber*10 > len(placesId) {
+		lim = len(placesId)
+	} else {
+		lim = pageNumber
+	}
+
+	for i := pageNumber*10 - 10; i < lim; i++ {
 		if filterId != 0 {
 			err := internal.Tools.Connection.Get(&body, `SELECT * FROM places WHERE placeId = &1 and filterId = $2`, placesId[i], filterId)
 			if err != nil {

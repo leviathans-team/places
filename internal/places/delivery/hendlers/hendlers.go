@@ -64,20 +64,11 @@ func GetPlaces(ctx *fiber.Ctx) error {
 	headers := ctx.GetReqHeaders()
 	filter := headers["filterId"]
 	date := headers["date"]
-	filterId := 0
-	var err error
-	if filter != "" {
-		filterId, err = strconv.Atoi(filter)
-		if err != nil {
-			log.Println(err)
-			ctx.Status(400)
-			return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
-		}
-	}
+	page := headers["page"]
 
-	body, repError := usecase.GetPlaces(filterId, date)
+	body, repError := usecase.GetPlaces(filter, date, page)
 	if repError.Err != nil {
-		log.Println(err)
+		log.Println(repError.Err)
 		ctx.Status(repError.Code)
 		return ctx.JSON(repError)
 	}
@@ -128,6 +119,17 @@ func DeleteFilter(ctx *fiber.Ctx) error {
 		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
 	}
 	repErr := usecase.DeleteFilter(filterId)
+	if repErr.Err != nil {
+		log.Println(repErr)
+		ctx.Status(repErr.Code)
+		return ctx.JSON(repErr)
+	}
+	return ctx.SendStatus(200)
+}
+
+func CancelOrder(ctx *fiber.Ctx) error {
+	key := ctx.Query("orderId")
+	repErr := usecase.CancelOrder(key)
 	if repErr.Err != nil {
 		log.Println(repErr)
 		ctx.Status(repErr.Code)

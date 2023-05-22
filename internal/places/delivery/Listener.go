@@ -15,7 +15,7 @@ func Hearing(app *fiber.App) {
 	myGroup.Post("/createPlace", hendlers.CreatePlace)
 	myGroup.Delete("/delPlace", hendlers.DeletePlace)
 	myGroup.Delete("/delFilter", hendlers.DeleteFilter)
-	myGroup.Delete("/cancelOrder")
+	myGroup.Delete("/cancelOrder", hendlers.CancelOrder)
 	myGroup.Post("/createOrder")
 	myGroup.Put("/updatePlace")
 	myGroup.Get("/searchPlace")
