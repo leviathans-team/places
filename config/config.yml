@@ -1,8 +1,8 @@
 Postgres:
-  user: "almaz"
-  password: "almaz"
+  user: "supet1337"
+  password: "prom"
   host: "localhost"
-  port: "5431"
+  port: "5432"
   dbName: "postgres"
 
 System:
