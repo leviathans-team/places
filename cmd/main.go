@@ -10,6 +10,7 @@ import (
 	"golang-pkg/pkg/db"
 	"golang-pkg/pkg/logger"
 	"log"
+	"os"
 )
 
 func main() {
@@ -23,6 +24,7 @@ func main() {
 	}
 
 	models.Tools.Logger = logger.NewServiceLogger(conf)
+	models.Tools.AdminLogger = log.New(os.Stdout, "ADMINLOG: ", log.LstdFlags)
 
 	models.Tools.Connection, err = db.InitPsqlDB(conf)
 	if err != nil {
