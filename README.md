@@ -21,3 +21,26 @@ type HackError struct {
 ## Логгер
 Нужен кто-то, кто разберется в нем и всем объяснит, как им пользоваться (хд)
 
+## Как запустить проект:
+https://learn.microsoft.com/ru-ru/azure/developer/go/configure-visual-studio-code 
+Проходим первые 4 пункта
+Если терминал выдает ошибку на комамнду go, то  Терминал > Новый терминал
+Прописываем:
+```
+go mod download
+go run cmd/main.go
+```
+## Для запускаа нужно:
+1) скачать Golang 1.20
+2) Скачать все либы через go mod download
+3) Иметь активную бд Postgres
+4) Изменить параметы в файл config на свои
+### Пример
+```
+Postgres:
+  user: "almaz"
+  password: "almaz"
+  host: "localhost"
+  port: "5431"
+  dbName: "postgres"
+```
