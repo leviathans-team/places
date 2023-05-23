@@ -6,9 +6,11 @@ import (
 	models "golang-pkg/internal"
 	"golang-pkg/internal/auth/handlers"
 	"golang-pkg/internal/places/delivery"
+	userHandlers "golang-pkg/internal/user/handlers"
 	"golang-pkg/pkg/db"
 	"golang-pkg/pkg/logger"
 	"log"
+	"os"
 )
 
 func main() {
@@ -22,6 +24,7 @@ func main() {
 	}
 
 	models.Tools.Logger = logger.NewServiceLogger(conf)
+	models.Tools.AdminLogger = log.New(os.Stdout, "ADMINLOG: ", log.LstdFlags)
 
 	models.Tools.Connection, err = db.InitPsqlDB(conf)
 	if err != nil {
@@ -36,6 +39,7 @@ func main() {
 
 	var app = fiber.New()
 	handlers.SetupRoutesForAuth(app)
+	userHandlers.SetupRoutesForAuth(app)
 	delivery.Hearing(app) // создай группу для сових ручек, в будующем будет проще поддерживать/фиксить/строить код
 
 	err = app.Listen(":3000")
