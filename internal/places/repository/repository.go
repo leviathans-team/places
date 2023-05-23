@@ -44,6 +44,7 @@ func CreatePlace(body placeStruct.Place) (placeStruct.Place, internal.HackError)
      commonObjects, equipment, rentersCount, meta) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) returning placeId`, body.PlaceName,
 		body.FilterId, body.PlaceAddress, body.WorkingTime, body.TelephoneNumber, body.Email, body.Site, body.PlaceServices,
 		body.TotalSquare, body.WorkingSquare, body.CommonObjects, body.Equipment, body.RentersCount, body.Meta).Scan(&placeId)
+	log.Println(placeId)
 	if err != nil {
 		log.Println(err)
 		return placeStruct.Place{}, internal.HackError{
@@ -283,7 +284,9 @@ func InitPlaceTables() internal.HackError {
     commonObjects TEXT NOT NULL , 
     equipment TEXT NOT NULL , 
     rentersCount INTEGER NOT NULL , 
-    meta TEXT[] NOT NULL );`)
+    meta TEXT[] NOT NULL,
+    rating FLOAT NOT NULL DEFAULT 0,
+     );`)
 	if err != nil {
 		log.Println(err)
 		return internal.HackError{

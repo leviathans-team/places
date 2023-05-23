@@ -26,6 +26,7 @@ type Place struct {
 	Equipment       string         `json:"equipment"`
 	RentersCount    int64          `json:"rentersCount"`
 	Meta            pq.StringArray `json:"meta"`
+	Rating          float64        `json:"rating"`
 }
 
 type Calendar struct {
