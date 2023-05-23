@@ -5,7 +5,7 @@ import "github.com/dgrijalva/jwt-go"
 type UserForRegister struct {
 	Name       string `json:"name" validate:"required"`
 	Surname    string `json:"surname" validate:"required"`
-	Patronymic string `json:"patronymic" validate:"required"`
+	Patronymic string `json:"patronymic"`
 	Email      string `json:"email" validate:"required"`
 	Phone      string `json:"phone" validate:"required"`
 	Password   string `json:"password" validate:"required"`
@@ -14,7 +14,7 @@ type UserForRegister struct {
 type BusinessUserForRegister struct { // Версия профиля для бизнеса
 	Name        string `json:"name" validate:"required"`
 	Surname     string `json:"surname" validate:"required"`
-	Patronymic  string `json:"patronymic" validate:"required"`
+	Patronymic  string `json:"patronymic"`
 	Email       string `json:"email" validate:"required"`
 	Phone       string `json:"phone" validate:"required"`
 	Password    string `json:"password" validate:"required"`
