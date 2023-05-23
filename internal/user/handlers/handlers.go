@@ -5,6 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"golang-pkg/internal"
 	user "golang-pkg/internal/user/usecase"
+	"golang-pkg/middleware"
 	"log"
 	"strconv"
 	"time"
