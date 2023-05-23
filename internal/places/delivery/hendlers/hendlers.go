@@ -197,6 +197,54 @@ func CancelOrder(ctx *fiber.Ctx) error {
 	return ctx.SendStatus(200)
 }
 
+func CreateOrder(ctx *fiber.Ctx) error {
+	var body placeStruct.Calendar
+	var result []placeStruct.Calendar
+	err := ctx.BodyParser(&body)
+	if err != nil {
+		log.Println(err)
+		ctx.Status(400)
+		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
+	}
+	result, creationErr := usecase.CreateOrder(body)
+	if creationErr.Err != nil {
+		log.Println(err)
+		ctx.Status(creationErr.Code)
+		return ctx.JSON(creationErr)
+	}
+	return ctx.JSON(result)
+}
+
+func UpdatePlace(ctx *fiber.Ctx) error {
+	var body placeStruct.Place
+	err := ctx.BodyParser(&body)
+	if err != nil {
+		log.Println(err)
+		ctx.Status(400)
+		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
+	}
+	updateErr := usecase.UpdatePlace(body)
+	if updateErr.Err != nil {
+		log.Println(err)
+		ctx.Status(updateErr.Code)
+		return ctx.JSON(updateErr)
+	}
+	return ctx.SendStatus(200)
+}
+
+func SearchPlace(ctx *fiber.Ctx) error {
+	key := ctx.Query("placeName")
+	var result []placeStruct.Place
+
+	result, searchErr := usecase.SearchPlace(key)
+	if searchErr.Err != nil {
+		log.Println(searchErr)
+		ctx.Status(searchErr.Code)
+		return ctx.JSON(searchErr)
+	}
+	return ctx.JSON(result)
+}
+
 // вывод собственных мест для лендлорда
 func GetMyPlaces(ctx *fiber.Ctx) error {
 	headers := ctx.GetRespHeaders()

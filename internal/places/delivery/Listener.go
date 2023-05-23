@@ -16,9 +16,12 @@ func Hearing(app *fiber.App) {
 	myGroup.Delete("/delPlace", hendlers.DeletePlace)
 	myGroup.Delete("/delFilter", hendlers.DeleteFilter)
 	myGroup.Delete("/myOrders/cancelOrder", hendlers.CancelOrder)
-	//myGroup.Post("/createOrder")
-	//myGroup.Put("/updatePlace")
-	//myGroup.Get("/searchPlace")
 	app.Get("/myPlace", hendlers.GetMyPlaces)
 	app.Get("/myOrders", hendlers.GetMyOrders)
+	myGroup.Delete("/myOrders/cancelOrder", hendlers.CancelOrder)
+	myGroup.Post("/createOrder", hendlers.CreateOrder)
+	myGroup.Put("/updatePlace", hendlers.UpdatePlace)
+	myGroup.Get("/searchPlace", hendlers.SearchPlace)
+
+
 }

@@ -34,6 +34,18 @@ func CreatePlace(body placeStruct.Place, user string) (placeStruct.Place, intern
 	return result, repErr
 }
 
+func CreateOrder(body placeStruct.Calendar) ([]placeStruct.Calendar, internal.HackError) {
+	return repository.CreateOrder(body)
+}
+
+func UpdatePlace(body placeStruct.Place) internal.HackError {
+	return repository.UpdatePlace(body)
+}
+
+func SearchPlace(key string) ([]placeStruct.Place, internal.HackError) {
+	return repository.SearchPlace(key)
+}
+
 func GetPlaces(filterId int, date time.Time, page int) ([]placeStruct.Place, internal.HackError) {
 	return repository.GetPlaces(filterId, date, page)
 }
