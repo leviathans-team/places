@@ -114,8 +114,8 @@ func DeleteFilter(filterId int64) internal.HackError {
 	return internal.HackError{}
 }
 
-func CancelOrder(orderId int64) internal.HackError {
-	_, err := internal.Tools.Connection.Exec("DELETE FROM calendar WHERE bookId = $1", orderId)
+func CancelOrder(orderId int64, userId int64) internal.HackError {
+	_, err := internal.Tools.Connection.Exec("DELETE FROM calendar WHERE bookId = $1 AND userid = $2", orderId, userId)
 	if err != nil {
 		return internal.HackError{Code: 500, Err: err, Timestamp: time.Now()}
 	}
@@ -260,4 +260,54 @@ func DropTable() error {
 		log.Println(err)
 	}
 	return err
+}
+
+func GetMyOrders(userId int64) ([]placeStruct.Calendar, internal.HackError) {
+	var orders []placeStruct.Calendar
+	var tmp placeStruct.Calendar
+	rows, err := internal.Tools.Connection.Queryx(`SELECT * FROM calendar WHERE userid = $1`, userId)
+	if err != nil {
+		log.Println(err)
+		return []placeStruct.Calendar{}, internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
+	for rows.Next() {
+		if err = rows.Scan(&tmp.BookId, &tmp.PlaceId, &tmp.TimeFrom, &tmp.TimeTo, &tmp.UserId); err != nil {
+			log.Println(err)
+			return []placeStruct.Calendar{}, internal.HackError{
+				Code:      500,
+				Err:       err,
+				Timestamp: time.Now(),
+			}
+		}
+		orders = append(orders, tmp)
+	}
+	return orders, internal.HackError{}
+}
+
+func GetLandPlaces(placesId []int64) ([]placeStruct.LandPlace, internal.HackError) {
+	var result []placeStruct.LandPlace
+	var tmp placeStruct.LandPlace
+	var tmpPlace placeStruct.Place
+	var tmpCalendar placeStruct.Calendar
+
+	for i := 0; i < len(placesId); i++ {
+		err := internal.Tools.Connection.Get(&tmpPlace, `SELECT * FROM places WHERE placeid = $1`, placesId[i])
+		if err != nil {
+			return []placeStruct.LandPlace{}, internal.HackError{Code: 500, Err: err, Timestamp: time.Now()}
+
+		}
+		err = internal.Tools.Connection.Get(&tmpCalendar, `SELECT * FROM calendar WHERE placeid = $1`, placesId[i])
+		if err != nil {
+			return []placeStruct.LandPlace{}, internal.HackError{Code: 500, Err: err, Timestamp: time.Now()}
+
+		}
+		tmp.Place = tmpPlace
+		tmp.Calendar = tmpCalendar
+		result = append(result, tmp)
+	}
+	return result, internal.HackError{}
 }

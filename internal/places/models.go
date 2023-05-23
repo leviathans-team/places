@@ -35,3 +35,8 @@ type Calendar struct {
 	TimeTo   time.Time `json:"timeTo"`
 	UserId   int64     `json:"userId"`
 }
+
+type LandPlace struct {
+	Place
+	Calendar
+}

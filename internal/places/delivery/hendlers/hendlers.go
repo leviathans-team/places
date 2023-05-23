@@ -1,6 +1,7 @@
 package hendlers
 
 import (
+	"errors"
 	"github.com/gofiber/fiber/v2"
 	models "golang-pkg/internal"
 	placeStruct "golang-pkg/internal/places"
@@ -22,13 +23,18 @@ func GetAllFilters(ctx *fiber.Ctx) error {
 }
 
 // Создаю новый фильтр и возвращаю обновленный список фильров
-// Нужна валидация на ADmin
 func CreateFilter(ctx *fiber.Ctx) error {
 	var body placeStruct.Filter
+	headers := ctx.GetRespHeaders()
+	isAdmin := headers["Isadmin"]
 	if err := ctx.BodyParser(body); err != nil {
 		log.Println(err)
 		ctx.Status(400)
 		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
+	}
+	if isAdmin == "" {
+		ctx.Status(400)
+		return ctx.JSON(models.HackError{Code: 400, Err: errors.New("you can do this"), Timestamp: time.Now()})
 	}
 	result, err := usecase.CreateFilter(body)
 	if err.Err != nil {
@@ -40,8 +46,10 @@ func CreateFilter(ctx *fiber.Ctx) error {
 }
 
 // Создание нового места
-// Надо докрутить валидацию на landlord и передачу Алмазу
 func CreatePlace(ctx *fiber.Ctx) error {
+	headers := ctx.GetRespHeaders()
+	isLandLord := headers["Islandlord"]
+	userId := headers["userId"]
 	var body placeStruct.Place
 	err := ctx.BodyParser(&body)
 	if err != nil {
@@ -49,7 +57,11 @@ func CreatePlace(ctx *fiber.Ctx) error {
 		ctx.Status(400)
 		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
 	}
-	body, creationErr := usecase.CreatePlace(body)
+	if isLandLord == "false" {
+		ctx.Status(400)
+		return ctx.JSON(models.HackError{Code: 400, Err: errors.New("you can do this"), Timestamp: time.Now()})
+	}
+	body, creationErr := usecase.CreatePlace(body, userId)
 	if creationErr.Err != nil {
 		log.Println(err)
 		ctx.Status(creationErr.Code)
@@ -81,9 +93,9 @@ func GetPlaces(ctx *fiber.Ctx) error {
 			return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
 		}
 	}
-	pageNumber := 0
+	pageNumber := 1
 	if page != "" {
-		pageNumber, err = strconv.Atoi(filter)
+		pageNumber, err = strconv.Atoi(page)
 		if err != nil {
 			log.Println(err)
 			ctx.Status(400)
@@ -122,13 +134,21 @@ func GetOnePlace(ctx *fiber.Ctx) error {
 	})
 }
 
+// удаление места. Доступно лендлордам и админам
 func DeletePlace(ctx *fiber.Ctx) error {
 	key := ctx.Query("placeId")
+	headers := ctx.GetRespHeaders()
+	isAdmin := headers["Isadmin"]
+	isLandLord := headers["Islandlord"]
 	placeId, err := strconv.ParseInt(key, 10, 64)
 	if err != nil {
 		log.Println(err)
 		ctx.Status(400)
 		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
+	}
+	if isAdmin == "" || isLandLord == "false" {
+		ctx.Status(400)
+		return ctx.JSON(models.HackError{Code: 400, Err: errors.New("you can do this"), Timestamp: time.Now()})
 	}
 	repErr := usecase.DeletePlace(placeId)
 	if repErr.Err != nil {
@@ -139,13 +159,20 @@ func DeletePlace(ctx *fiber.Ctx) error {
 	return ctx.SendStatus(200)
 }
 
+// удаление фильтра. Доступно только админам
 func DeleteFilter(ctx *fiber.Ctx) error {
 	key := ctx.Query("filterId")
+	headers := ctx.GetRespHeaders()
+	isAdmin := headers["Isadmin"]
 	filterId, err := strconv.ParseInt(key, 10, 64)
 	if err != nil {
 		log.Println(err)
 		ctx.Status(400)
 		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
+	}
+	if isAdmin == "" {
+		ctx.Status(400)
+		return ctx.JSON(models.HackError{Code: 400, Err: errors.New("you can do this"), Timestamp: time.Now()})
 	}
 	repErr := usecase.DeleteFilter(filterId)
 	if repErr.Err != nil {
@@ -156,13 +183,52 @@ func DeleteFilter(ctx *fiber.Ctx) error {
 	return ctx.SendStatus(200)
 }
 
+// отмена бронирования пользователем
 func CancelOrder(ctx *fiber.Ctx) error {
 	key := ctx.Query("orderId")
-	repErr := usecase.CancelOrder(key)
+	headers := ctx.GetRespHeaders()
+	userId := headers["Userid"]
+	repErr := usecase.CancelOrder(key, userId)
 	if repErr.Err != nil {
 		log.Println(repErr)
 		ctx.Status(repErr.Code)
 		return ctx.JSON(repErr)
 	}
 	return ctx.SendStatus(200)
+}
+
+// вывод собственных мест для лендлорда
+func GetMyPlaces(ctx *fiber.Ctx) error {
+	headers := ctx.GetRespHeaders()
+	userId := headers["Userid"]
+	isLandLord := headers["Islandlord"]
+	landId, err := strconv.ParseInt(userId, 10, 64)
+	if err != nil {
+		log.Println(err)
+		ctx.Status(400)
+		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
+	}
+	if isLandLord == "false" {
+		return ctx.JSON(models.HackError{Code: 401, Err: errors.New("you'r not LandLord"), Timestamp: time.Now()})
+	}
+	body, repErr := usecase.GetMyPlace(landId)
+	if repErr.Err != nil {
+		log.Println(repErr)
+		ctx.Status(repErr.Code)
+		return ctx.JSON(repErr)
+	}
+	return ctx.JSON(body)
+}
+
+// возвращение всех бронирований пользователя
+func GetMyOrders(ctx *fiber.Ctx) error {
+	headers := ctx.GetReqHeaders()
+	userId := headers["Userid"]
+	body, repErr := usecase.GetMyOrders(userId)
+	if repErr.Err != nil {
+		log.Println(repErr)
+		ctx.Status(repErr.Code)
+		return ctx.JSON(repErr)
+	}
+	return ctx.JSON(body)
 }
