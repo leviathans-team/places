@@ -1,13 +1,11 @@
 package hendlers
 
 import (
-	"errors"
 	"github.com/gofiber/fiber/v2"
 	models "golang-pkg/internal"
 	placeStruct "golang-pkg/internal/places"
 	"golang-pkg/internal/places/usecase"
 	"log"
-	"strconv"
 	"time"
 )
 
@@ -27,16 +25,13 @@ func CreateFilter(ctx *fiber.Ctx) error {
 	var body placeStruct.Filter
 	headers := ctx.GetRespHeaders()
 	isAdmin := headers["Isadmin"]
-	if err := ctx.BodyParser(body); err != nil {
+	if err := ctx.BodyParser(&body); err != nil {
 		log.Println(err)
 		ctx.Status(400)
 		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
 	}
-	if isAdmin == "" {
-		ctx.Status(400)
-		return ctx.JSON(models.HackError{Code: 400, Err: errors.New("you can do this"), Timestamp: time.Now()})
-	}
-	result, err := usecase.CreateFilter(body)
+
+	result, err := usecase.CreateFilter(body, isAdmin)
 	if err.Err != nil {
 		log.Println(err)
 		ctx.Status(err.Code)
@@ -57,11 +52,8 @@ func CreatePlace(ctx *fiber.Ctx) error {
 		ctx.Status(400)
 		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
 	}
-	if isLandLord == "false" {
-		ctx.Status(400)
-		return ctx.JSON(models.HackError{Code: 400, Err: errors.New("you can do this"), Timestamp: time.Now()})
-	}
-	body, creationErr := usecase.CreatePlace(body, userId)
+
+	body, creationErr := usecase.CreatePlace(body, userId, isLandLord)
 	if creationErr.Err != nil {
 		log.Println(err)
 		ctx.Status(creationErr.Code)
@@ -76,33 +68,10 @@ func GetPlaces(ctx *fiber.Ctx) error {
 	var err error
 	headers := ctx.GetReqHeaders()
 	filter := headers["Filterid"]
-	date, err := time.Parse("2006-01-02 15:04:05", headers["Date"])
+	date := headers["Date"]
 	page := headers["Page"]
-	if err != nil {
-		log.Println(err)
-		ctx.Status(400)
-		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
-	}
-	filterId := 0
 
-	if filter != "" {
-		filterId, err = strconv.Atoi(filter)
-		if err != nil {
-			log.Println(err)
-			ctx.Status(400)
-			return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
-		}
-	}
-	pageNumber := 1
-	if page != "" {
-		pageNumber, err = strconv.Atoi(page)
-		if err != nil {
-			log.Println(err)
-			ctx.Status(400)
-			return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
-		}
-	}
-	body, repError := usecase.GetPlaces(filterId, date, pageNumber)
+	body, repError := usecase.GetPlaces(filter, date, page)
 
 	if repError.Err != nil {
 		log.Println(err)
@@ -116,16 +85,10 @@ func GetPlaces(ctx *fiber.Ctx) error {
 
 // отдаю одно конкретное место по id
 func GetOnePlace(ctx *fiber.Ctx) error {
-	key := ctx.Query("placeId")
-	placeId, err := strconv.ParseInt(key, 10, 64)
-	if err != nil {
-		log.Println(err)
-		ctx.Status(400)
-		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
-	}
+	placeId := ctx.Query("placeId")
 	body, repError := usecase.GetOnePlace(placeId)
 	if repError.Err != nil {
-		log.Println(err)
+		log.Println(repError.Err)
 		ctx.Status(repError.Code)
 		return ctx.JSON(repError)
 	}
@@ -140,17 +103,8 @@ func DeletePlace(ctx *fiber.Ctx) error {
 	headers := ctx.GetRespHeaders()
 	isAdmin := headers["Isadmin"]
 	isLandLord := headers["Islandlord"]
-	placeId, err := strconv.ParseInt(key, 10, 64)
-	if err != nil {
-		log.Println(err)
-		ctx.Status(400)
-		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
-	}
-	if isAdmin == "" || isLandLord == "false" {
-		ctx.Status(400)
-		return ctx.JSON(models.HackError{Code: 400, Err: errors.New("you can do this"), Timestamp: time.Now()})
-	}
-	repErr := usecase.DeletePlace(placeId)
+
+	repErr := usecase.DeletePlace(key, isAdmin, isLandLord)
 	if repErr.Err != nil {
 		log.Println(repErr)
 		ctx.Status(repErr.Code)
@@ -161,20 +115,11 @@ func DeletePlace(ctx *fiber.Ctx) error {
 
 // удаление фильтра. Доступно только админам
 func DeleteFilter(ctx *fiber.Ctx) error {
-	key := ctx.Query("filterId")
+	filterid := ctx.Query("filterId")
 	headers := ctx.GetRespHeaders()
 	isAdmin := headers["Isadmin"]
-	filterId, err := strconv.ParseInt(key, 10, 64)
-	if err != nil {
-		log.Println(err)
-		ctx.Status(400)
-		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
-	}
-	if isAdmin == "" {
-		ctx.Status(400)
-		return ctx.JSON(models.HackError{Code: 400, Err: errors.New("you can do this"), Timestamp: time.Now()})
-	}
-	repErr := usecase.DeleteFilter(filterId)
+
+	repErr := usecase.DeleteFilter(filterid, isAdmin)
 	if repErr.Err != nil {
 		log.Println(repErr)
 		ctx.Status(repErr.Code)
@@ -250,16 +195,7 @@ func GetMyPlaces(ctx *fiber.Ctx) error {
 	headers := ctx.GetRespHeaders()
 	userId := headers["Userid"]
 	isLandLord := headers["Islandlord"]
-	landId, err := strconv.ParseInt(userId, 10, 64)
-	if err != nil {
-		log.Println(err)
-		ctx.Status(400)
-		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
-	}
-	if isLandLord == "false" {
-		return ctx.JSON(models.HackError{Code: 401, Err: errors.New("you'r not LandLord"), Timestamp: time.Now()})
-	}
-	body, repErr := usecase.GetMyPlace(landId)
+	body, repErr := usecase.GetMyPlace(userId, isLandLord)
 	if repErr.Err != nil {
 		log.Println(repErr)
 		ctx.Status(repErr.Code)

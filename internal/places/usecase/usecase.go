@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"errors"
 	"golang-pkg/internal"
 	placeStruct "golang-pkg/internal/places"
 	"golang-pkg/internal/places/repository"
@@ -13,16 +14,24 @@ func GetFilters() ([]placeStruct.Filter, internal.HackError) {
 	return repository.GetAllFilters()
 }
 
-func CreateFilter(body placeStruct.Filter) ([]placeStruct.Filter, internal.HackError) {
+func CreateFilter(body placeStruct.Filter, isAdmin string) ([]placeStruct.Filter, internal.HackError) {
+	if isAdmin == "" {
+		return []placeStruct.Filter{}, internal.HackError{Code: 400, Err: errors.New("you must be admin"), Timestamp: time.Now()}
+	}
 	return repository.CreateFilter(body)
 }
 
-func CreatePlace(body placeStruct.Place, user string) (placeStruct.Place, internal.HackError) {
+func CreatePlace(body placeStruct.Place, user, isLandLord string) (placeStruct.Place, internal.HackError) {
+	if isLandLord == "false" {
+		return placeStruct.Place{}, internal.HackError{Code: 400, Err: errors.New("you must be landlord"), Timestamp: time.Now()}
+	}
+
 	userID, err := strconv.ParseInt(user, 10, 64)
 	if err != nil {
 		log.Println(err)
 		return placeStruct.Place{}, internal.HackError{Code: 500, Err: err, Timestamp: time.Now()}
 	}
+
 	result, repErr := repository.CreatePlace(body)
 	if repErr.Err != nil {
 		return result, repErr
@@ -46,19 +55,65 @@ func SearchPlace(key string) ([]placeStruct.Place, internal.HackError) {
 	return repository.SearchPlace(key)
 }
 
-func GetPlaces(filterId int, date time.Time, page int) ([]placeStruct.Place, internal.HackError) {
-	return repository.GetPlaces(filterId, date, page)
+func GetPlaces(filter, dateH, page string) ([]placeStruct.Place, internal.HackError) {
+	date, err := time.Parse("2006-01-02 15:04:05", dateH)
+	if err != nil {
+		log.Println(err)
+		return []placeStruct.Place{}, internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
+	}
+
+	filterId := 0
+	if filter != "" {
+		filterId, err = strconv.Atoi(filter)
+		if err != nil {
+			log.Println(err)
+			return []placeStruct.Place{}, internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
+		}
+	}
+	pageNumber := 1
+	if page != "" {
+		pageNumber, err = strconv.Atoi(page)
+		if err != nil {
+			log.Println(err)
+			return []placeStruct.Place{}, internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
+		}
+	}
+	return repository.GetPlaces(filterId, date, pageNumber)
 }
 
-func GetOnePlace(placeId int64) (placeStruct.Place, internal.HackError) {
+func GetOnePlace(key string) (placeStruct.Place, internal.HackError) {
+	placeId, err := strconv.ParseInt(key, 10, 64)
+	if err != nil {
+		log.Println(err)
+		return placeStruct.Place{}, internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
+	}
 	return repository.GetOnePlace(placeId)
 }
+func DeletePlace(key, isAdmin, isLandLord string) internal.HackError {
 
-func DeletePlace(placeId int64) internal.HackError {
+	placeId, err := strconv.ParseInt(key, 10, 64)
+	if err != nil {
+		log.Println(err)
+		return internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
+	}
+	if isAdmin == "" || isLandLord == "false" {
+		return internal.HackError{Code: 400, Err: errors.New("you must be superuser"), Timestamp: time.Now()}
+	}
+
 	return repository.DeletePlace(placeId)
 }
 
-func DeleteFilter(filterId int64) internal.HackError {
+func DeleteFilter(key, isAdmin string) internal.HackError {
+
+	filterId, err := strconv.ParseInt(key, 10, 64)
+	if err != nil {
+		log.Println(err)
+		return internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
+	}
+	if isAdmin == "" {
+		return internal.HackError{Code: 400, Err: errors.New("you must be admin"), Timestamp: time.Now()}
+	}
+
 	return repository.DeleteFilter(filterId)
 }
 
@@ -85,10 +140,21 @@ func GetMyOrders(userId string) ([]placeStruct.Calendar, internal.HackError) {
 	return repository.GetMyOrders(user)
 }
 
-func GetMyPlace(userId int64) ([]placeStruct.LandPlace, internal.HackError) {
-	placesId, err := user.GetPlacesLandlord(userId)
-	if err.Err != nil {
-		return []placeStruct.LandPlace{}, err
+func GetMyPlace(userId, isLandLord string) ([]placeStruct.LandPlace, internal.HackError) {
+
+	landId, err := strconv.ParseInt(userId, 10, 64)
+	if err != nil {
+		log.Println(err)
+		return []placeStruct.LandPlace{}, internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
+	}
+	if isLandLord == "false" {
+		return []placeStruct.LandPlace{}, internal.HackError{Code: 401, Err: errors.New("you must be landlord"), Timestamp: time.Now()}
+	}
+
+	placesId, err := user.GetPlacesLandlord(landId)
+	if err != nil {
+		log.Println(err)
+		return []placeStruct.LandPlace{}, internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
 	}
 	return repository.GetLandPlaces(placesId)
 }
