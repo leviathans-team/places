@@ -41,3 +41,16 @@ type LandPlace struct {
 	Place
 	Calendar
 }
+
+type Comment struct {
+	CommentId int64   `json:"commentId"`
+	PlaceId   int64   `json:"placeId"`
+	UserId    int64   `json:"userId"`
+	Comment   string  `json:"comment"`
+	Mark      float64 `json:"mark"`
+}
+
+type CommentMessage struct {
+	Message string  `json:"message"`
+	Mark    float64 `json:"mark"`
+}

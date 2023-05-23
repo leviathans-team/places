@@ -92,3 +92,33 @@ func GetMyPlace(userId int64) ([]placeStruct.LandPlace, internal.HackError) {
 	}
 	return repository.GetLandPlaces(placesId)
 }
+
+func CreateComment(user string, place string, body placeStruct.CommentMessage) ([]placeStruct.Comment, internal.HackError) {
+	placeId, err := strconv.ParseInt(place, 10, 64)
+	if err != nil {
+		log.Println(err)
+		return []placeStruct.Comment{}, internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
+	}
+
+	userID, err := strconv.ParseInt(user, 10, 64)
+	if err != nil {
+		log.Println(err)
+		return []placeStruct.Comment{}, internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
+	}
+	var repBody placeStruct.Comment
+	repBody.Comment = body.Message
+	repBody.UserId = userID
+	repBody.PlaceId = placeId
+	repBody.Mark = body.Mark
+	return repository.CreateComment(repBody)
+
+}
+
+func GetComment(place string) ([]placeStruct.Comment, internal.HackError) {
+	placeId, err := strconv.ParseInt(place, 10, 64)
+	if err != nil {
+		log.Println(err)
+		return []placeStruct.Comment{}, internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
+	}
+	return repository.GetComments(placeId)
+}

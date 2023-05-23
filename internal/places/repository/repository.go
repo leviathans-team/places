@@ -269,6 +269,21 @@ func InitPlaceTables() internal.HackError {
 			Timestamp: time.Now(),
 		}
 	}
+	_, err = internal.Tools.Connection.Exec(`CREATE TABLE comments (
+    	coomentId BIGSERIAL PRIMARY KEY NOT NULL,
+    	placeId BIGSERIAL NOT NULL ,
+    	userId BIGSERIAL NOT NULL,
+    	comment TEXT NOT NULL,
+    	mark FLOAT NOT NULL DEFAULT 0
+		);`)
+	if err != nil {
+		log.Println(err)
+		return internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
 	_, err = internal.Tools.Connection.Exec(`CREATE TABLE places (
     placeId BIGSERIAL PRIMARY KEY NOT NULL,
     placeName TEXT NOT NULL,
@@ -285,7 +300,7 @@ func InitPlaceTables() internal.HackError {
     equipment TEXT NOT NULL , 
     rentersCount INTEGER NOT NULL , 
     meta TEXT[] NOT NULL,
-    rating FLOAT NOT NULL DEFAULT 0,
+    rating FLOAT NOT NULL DEFAULT 0
      );`)
 	if err != nil {
 		log.Println(err)
@@ -354,7 +369,7 @@ func GetLandPlaces(placesId []int64) ([]placeStruct.LandPlace, internal.HackErro
 	var tmpCalendar placeStruct.Calendar
 
 	for i := 0; i < len(placesId); i++ {
-		err := internal.Tools.Connection.Get(&tmpPlace, `SELECT * FROM places WHERE placeid = $1`, placesId[i])
+		err := internal.Tools.Connection.Get(&tmpPlace, `SELECT * FROM places WHERE placeId = $1`, placesId[i])
 		if err != nil {
 			return []placeStruct.LandPlace{}, internal.HackError{Code: 500, Err: err, Timestamp: time.Now()}
 
@@ -369,4 +384,55 @@ func GetLandPlaces(placesId []int64) ([]placeStruct.LandPlace, internal.HackErro
 		result = append(result, tmp)
 	}
 	return result, internal.HackError{}
+}
+
+func GetComments(placeId int64) ([]placeStruct.Comment, internal.HackError) {
+	var result []placeStruct.Comment
+	var tmp placeStruct.Comment
+	rows, err := internal.Tools.Connection.Queryx(`SELECT * FROM comments WHERE placeid = $1`, placeId)
+	if err != nil {
+		log.Println(err)
+		return []placeStruct.Comment{}, internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
+	for rows.Next() {
+		if err = rows.Scan(&tmp.CommentId, &tmp.PlaceId, &tmp.UserId, &tmp.Comment, &tmp.Mark); err != nil {
+			log.Println(err)
+			return []placeStruct.Comment{}, internal.HackError{
+				Code:      500,
+				Err:       err,
+				Timestamp: time.Now(),
+			}
+		}
+		result = append(result, tmp)
+	}
+	return result, internal.HackError{}
+}
+
+func CreateComment(body placeStruct.Comment) ([]placeStruct.Comment, internal.HackError) {
+	var commentId int64
+	err := internal.Tools.Connection.QueryRowx(`INSERT INTO comments
+(placeId, userId, comment, mark) VALUES($1, $2, $3, $4) returning commentId`, body.PlaceId, body.UserId, body.Comment, body.Mark).Scan(&commentId)
+	if err != nil {
+		log.Println(err)
+		return []placeStruct.Comment{}, internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
+	total_mark := 0.0
+	err = internal.Tools.Connection.Get(&total_mark, `SELECT AVG(mark) FROM comments WHERE placeid = $1`, body.PlaceId)
+	if err != nil {
+		return []placeStruct.Comment{}, internal.HackError{Code: 500, Err: err, Timestamp: time.Now()}
+	}
+	var mark float64
+	err = internal.Tools.Connection.QueryRowx(`UPDATE places SET rating = $1 WHERE placeid = $2 returning mark`, total_mark, body.PlaceId).Scan(&mark)
+	if err != nil || mark != total_mark {
+		return []placeStruct.Comment{}, internal.HackError{Code: 500, Err: err, Timestamp: time.Now()}
+	}
+	return GetComments(body.PlaceId)
 }

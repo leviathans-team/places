@@ -22,6 +22,6 @@ func Hearing(app *fiber.App) {
 	myGroup.Post("/createOrder", hendlers.CreateOrder)
 	myGroup.Put("/updatePlace", hendlers.UpdatePlace)
 	myGroup.Get("/searchPlace", hendlers.SearchPlace)
-
-
+	myGroup.Post("/curent/comments/createComment", hendlers.CreateComment)
+	myGroup.Get("/curent/comments", hendlers.GetComment)
 }

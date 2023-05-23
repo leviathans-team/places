@@ -280,3 +280,36 @@ func GetMyOrders(ctx *fiber.Ctx) error {
 	}
 	return ctx.JSON(body)
 }
+
+func CreateComment(ctx *fiber.Ctx) error {
+	place := ctx.Query("placeId")
+	headers := ctx.GetReqHeaders()
+	userId := headers["Userid"]
+
+	var body placeStruct.CommentMessage
+	err := ctx.BodyParser(&body)
+	if err != nil {
+		log.Println(err)
+		ctx.Status(400)
+		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
+	}
+
+	result, repErr := usecase.CreateComment(userId, place, body)
+	if repErr.Err != nil {
+		log.Println(repErr)
+		ctx.Status(repErr.Code)
+		return ctx.JSON(repErr)
+	}
+	return ctx.JSON(result)
+}
+
+func GetComment(ctx *fiber.Ctx) error {
+	place := ctx.Query("placeId")
+	result, repErr := usecase.GetComment(place)
+	if repErr.Err != nil {
+		log.Println(repErr)
+		ctx.Status(repErr.Code)
+		return ctx.JSON(repErr)
+	}
+	return ctx.JSON(result)
+}
