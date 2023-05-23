@@ -1,22 +1,25 @@
-package handlers
+package userHandlers
 
 import (
 	"errors"
 	"github.com/gofiber/fiber/v2"
 	"golang-pkg/internal"
 	user "golang-pkg/internal/user/usecase"
+	"golang-pkg/middleware"
 	"log"
 	"strconv"
 	"time"
 )
 
 func SetupRoutesForAuth(app *fiber.App) {
-	commonUser := app.Group("")
+	//commonUser := app.Group("")
+	//
+	//businessUser := app.Group("")
 
-	businessUser := app.Group("")
+	admin := app.Group("/admin", middleware.UserIdentification)
+	admin.Put("/setAdmin/:userId", setAdmin)
+	admin.Put("/promotionAdmin", promotionAdmin)
 
-	admin := app.Group("/admin")
-	admin.Put("/setAdmin", setAdmin)
 	admin.Put("/setAdmin", unSetAdmin)
 	admin.Put("/setAdmin", deleteProfile)
 	admin.Put("/setAdmin", deleteAdminProfile)
@@ -24,8 +27,10 @@ func SetupRoutesForAuth(app *fiber.App) {
 }
 
 func setAdmin(ctx *fiber.Ctx) error {
-	admLevel := ctx.Get("adminLevel", "")
+
+	admLevel := ctx.GetRespHeader("adminLevel", "")
 	if admLevel != "3" {
+		log.Print(errors.New("unauthorized admin"))
 		ctx.Status(401)
 		return ctx.JSON(internal.HackError{
 			Code:      401,
@@ -34,18 +39,31 @@ func setAdmin(ctx *fiber.Ctx) error {
 			Timestamp: time.Now(),
 		})
 	}
-	admLevelInt, err := strconv.ParseInt(admLevel, 10, 64)
+
+	userId := ctx.Params("userid", "-1")
+	userIdInt, err := strconv.ParseInt(userId, 10, 64)
 	if err != nil {
-		log.Print(err)
 		ctx.Status(400)
 		return ctx.JSON(internal.HackError{
-			Code:      400,
-			Err:       err,
-			Message:   "incorrect value in header",
+			Code:      401,
+			Err:       errors.New("uncorrected params"),
+			Message:   "",
 			Timestamp: time.Now(),
 		})
 	}
-	hackErr := user.SetAdmin(admLevelInt)
+
+	//admLevelInt, err := strconv.ParseInt(admLevel, 10, 64)
+	//if err != nil {
+	//	log.Print(err)
+	//	ctx.Status(400)
+	//	return ctx.JSON(internal.HackError{
+	//		Code:      400,
+	//		Err:       err,
+	//		Message:   "incorrect value in header",
+	//		Timestamp: time.Now(),
+	//	})
+	//}
+	hackErr := user.SetAdmin(userIdInt)
 	if hackErr.Err != nil {
 		ctx.Status(hackErr.Code)
 		return ctx.JSON(internal.HackError{
@@ -58,14 +76,21 @@ func setAdmin(ctx *fiber.Ctx) error {
 	return nil
 }
 
-//func unSetAdmin(ctx *fiber.Ctx) error {
-//
-//}
-//
-//func deleteProfile(ctx *fiber.Ctx) error {
-//
-//}
-//
-//func deleteAdminProfile(ctx *fiber.Ctx) error {
-//
-//}
+func unSetAdmin(ctx *fiber.Ctx) error {
+	return nil
+}
+
+func deleteProfile(ctx *fiber.Ctx) error {
+	return nil
+
+}
+
+func deleteAdminProfile(ctx *fiber.Ctx) error {
+	return nil
+
+}
+
+func promotionAdmin(ctx *fiber.Ctx) error {
+	err := user.PromotionAdmin(1)
+	return err.Err
+}

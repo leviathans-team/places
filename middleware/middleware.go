@@ -44,7 +44,7 @@ func UserIdentification(ctx *fiber.Ctx) error {
 	}
 	ctx.Set("userId", strconv.FormatInt(headers.UserId, 10))
 	ctx.Set("IsLandLord", strconv.FormatBool(headers.IsLandLord))
-	ctx.Set("IsAdmin", strconv.FormatInt(headers.AdminLevel, 10))
+	ctx.Set("adminLevel", strconv.FormatInt(headers.AdminLevel, 10))
 
-	return nil
+	return ctx.Next()
 }

@@ -7,6 +7,7 @@ import (
 	"golang-pkg/internal"
 	"golang-pkg/internal/auth"
 	"golang-pkg/internal/auth/repository"
+	user "golang-pkg/internal/user/usecase"
 
 	"log"
 	"time"
@@ -128,12 +129,24 @@ func SingUpBusiness(user *auth.BusinessUserForRegister) internal.HackError {
 }
 
 func GenerateToken(userId int64) (string, internal.HackError) {
+	isLadLord, err := user.IsLandlord(userId)
+	if err.Err != nil {
+		log.Print(err)
+		return "", err
+	}
+	lvlAdmin, err := user.IsAdmin(userId)
+	if err.Err != nil {
+		log.Print(err)
+		return "", err
+	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &auth.TokenClaims{
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(tokenTTL).Unix(), //Токен будет жить 10 часов
 			IssuedAt:  time.Now().Unix(),
 		},
-		UserId: userId,
+		UserId:     userId,
+		IsLandLord: isLadLord,
+		AdminLevel: lvlAdmin,
 	})
 
 	tokenString, e := token.SignedString([]byte(singInKey))

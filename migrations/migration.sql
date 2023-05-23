@@ -17,8 +17,10 @@ create table users_login (
 
 
 create table admins (
-    user_id bigint references users_info(user_id) primary key not null
+                        user_id bigint references users_info(user_id) primary key not null,
+                        admin_level int
 );
+
 
 create table landlords (
                            user_id bigint references users_info(user_id) primary key,
