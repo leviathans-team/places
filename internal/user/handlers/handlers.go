@@ -77,20 +77,21 @@ func setAdmin(ctx *fiber.Ctx) error {
 }
 
 func unSetAdmin(ctx *fiber.Ctx) error {
-	return nil
+	return ctx.Next()
 }
 
 func deleteProfile(ctx *fiber.Ctx) error {
-	return nil
+	return ctx.Next()
 
 }
 
 func deleteAdminProfile(ctx *fiber.Ctx) error {
-	return nil
+	return ctx.Next()
 
 }
 
 func promotionAdmin(ctx *fiber.Ctx) error {
-	err := user.PromotionAdmin(1)
-	return err.Err
+	//err := user.PromotionAdmin(1)
+	return ctx.Next()
+	//return ctx.Next()
 }
