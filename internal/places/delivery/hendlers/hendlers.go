@@ -12,7 +12,7 @@ import (
 // Возвращаю весь список фильров для выборки по ним
 func GetAllFilters(ctx *fiber.Ctx) error {
 	body, err := usecase.GetFilters()
-	if err.Err != nil {
+	if err != nil {
 		log.Println(err)
 		ctx.Status(err.Code)
 		return ctx.JSON(err)
@@ -32,7 +32,7 @@ func CreateFilter(ctx *fiber.Ctx) error {
 	}
 
 	result, err := usecase.CreateFilter(body, isAdmin)
-	if err.Err != nil {
+	if err != nil {
 		log.Println(err)
 		ctx.Status(err.Code)
 		return ctx.JSON(err)
@@ -54,7 +54,7 @@ func CreatePlace(ctx *fiber.Ctx) error {
 	}
 
 	body, creationErr := usecase.CreatePlace(body, userId, isLandLord)
-	if creationErr.Err != nil {
+	if creationErr != nil {
 		log.Println(err)
 		ctx.Status(creationErr.Code)
 		return ctx.JSON(creationErr)
@@ -73,7 +73,7 @@ func GetPlaces(ctx *fiber.Ctx) error {
 
 	body, repError := usecase.GetPlaces(filter, date, page)
 
-	if repError.Err != nil {
+	if repError != nil {
 		log.Println(err)
 		ctx.Status(repError.Code)
 		return ctx.JSON(repError)
@@ -87,8 +87,8 @@ func GetPlaces(ctx *fiber.Ctx) error {
 func GetOnePlace(ctx *fiber.Ctx) error {
 	placeId := ctx.Query("placeId")
 	body, repError := usecase.GetOnePlace(placeId)
-	if repError.Err != nil {
-		log.Println(repError.Err)
+	if repError != nil {
+		log.Println(repError)
 		ctx.Status(repError.Code)
 		return ctx.JSON(repError)
 	}
@@ -105,7 +105,7 @@ func DeletePlace(ctx *fiber.Ctx) error {
 	isLandLord := headers["Islandlord"]
 
 	repErr := usecase.DeletePlace(key, isAdmin, isLandLord)
-	if repErr.Err != nil {
+	if repErr != nil {
 		log.Println(repErr)
 		ctx.Status(repErr.Code)
 		return ctx.JSON(repErr)
@@ -120,7 +120,7 @@ func DeleteFilter(ctx *fiber.Ctx) error {
 	isAdmin := headers["Isadmin"]
 
 	repErr := usecase.DeleteFilter(filterid, isAdmin)
-	if repErr.Err != nil {
+	if repErr != nil {
 		log.Println(repErr)
 		ctx.Status(repErr.Code)
 		return ctx.JSON(repErr)
@@ -134,7 +134,7 @@ func CancelOrder(ctx *fiber.Ctx) error {
 	headers := ctx.GetRespHeaders()
 	userId := headers["Userid"]
 	repErr := usecase.CancelOrder(key, userId)
-	if repErr.Err != nil {
+	if repErr != nil {
 		log.Println(repErr)
 		ctx.Status(repErr.Code)
 		return ctx.JSON(repErr)
@@ -152,8 +152,8 @@ func CreateOrder(ctx *fiber.Ctx) error {
 		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
 	}
 	result, creationErr := usecase.CreateOrder(body)
-	if creationErr.Err != nil {
-		log.Println(creationErr.Err)
+	if creationErr != nil {
+		log.Println(creationErr)
 		ctx.Status(creationErr.Code)
 		return ctx.JSON(creationErr)
 	}
@@ -169,8 +169,8 @@ func UpdatePlace(ctx *fiber.Ctx) error {
 		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
 	}
 	updateErr := usecase.UpdatePlace(body)
-	if updateErr.Err != nil {
-		log.Println(updateErr.Err)
+	if updateErr != nil {
+		log.Println(updateErr)
 		ctx.Status(updateErr.Code)
 		return ctx.JSON(updateErr)
 	}
@@ -182,7 +182,7 @@ func SearchPlace(ctx *fiber.Ctx) error {
 	var result []placeStruct.Place
 
 	result, searchErr := usecase.SearchPlace(key)
-	if searchErr.Err != nil {
+	if searchErr != nil {
 		log.Println(searchErr)
 		ctx.Status(searchErr.Code)
 		return ctx.JSON(searchErr)
@@ -196,7 +196,7 @@ func GetMyPlaces(ctx *fiber.Ctx) error {
 	userId := headers["Userid"]
 	isLandLord := headers["Islandlord"]
 	body, repErr := usecase.GetMyPlace(userId, isLandLord)
-	if repErr.Err != nil {
+	if repErr != nil {
 		log.Println(repErr)
 		ctx.Status(repErr.Code)
 		return ctx.JSON(repErr)
@@ -209,7 +209,7 @@ func GetMyOrders(ctx *fiber.Ctx) error {
 	headers := ctx.GetReqHeaders()
 	userId := headers["Userid"]
 	body, repErr := usecase.GetMyOrders(userId)
-	if repErr.Err != nil {
+	if repErr != nil {
 		log.Println(repErr)
 		ctx.Status(repErr.Code)
 		return ctx.JSON(repErr)
@@ -231,7 +231,7 @@ func CreateComment(ctx *fiber.Ctx) error {
 	}
 
 	result, repErr := usecase.CreateComment(userId, place, body)
-	if repErr.Err != nil {
+	if repErr != nil {
 		log.Println(repErr)
 		ctx.Status(repErr.Code)
 		return ctx.JSON(repErr)
@@ -242,7 +242,7 @@ func CreateComment(ctx *fiber.Ctx) error {
 func GetComment(ctx *fiber.Ctx) error {
 	place := ctx.Query("placeId")
 	result, repErr := usecase.GetComment(place)
-	if repErr.Err != nil {
+	if repErr != nil {
 		log.Println(repErr)
 		ctx.Status(repErr.Code)
 		return ctx.JSON(repErr)
@@ -255,7 +255,7 @@ func GetNotApprovedPlace(ctx *fiber.Ctx) error {
 	isAdmin := headers["Isadmin"]
 
 	body, creationErr := usecase.GetNotApprovedPlaces(isAdmin)
-	if creationErr.Err != nil {
+	if creationErr != nil {
 		ctx.Status(creationErr.Code)
 		return ctx.JSON(creationErr)
 	}
@@ -274,7 +274,7 @@ func MakeApproved(ctx *fiber.Ctx) error {
 		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
 	}
 	result, creationErr := usecase.MakeApproved(placeId, isAdmin)
-	if creationErr.Err != nil {
+	if creationErr != nil {
 		ctx.Status(creationErr.Code)
 		return ctx.JSON(creationErr)
 	}
@@ -285,7 +285,7 @@ func CreateLike(ctx *fiber.Ctx) error {
 	placeId := ctx.Query("placeId")
 	userId := ctx.Query("userId")
 	createErr := usecase.CreateLike(placeId, userId)
-	if createErr.Err != nil {
+	if createErr != nil {
 		log.Println(createErr)
 		ctx.Status(createErr.Code)
 		return ctx.JSON(createErr)
@@ -296,7 +296,7 @@ func CreateLike(ctx *fiber.Ctx) error {
 func GetPlaceLikeCount(ctx *fiber.Ctx) error {
 	placeId := ctx.Query("placeId")
 	result, getErr := usecase.GetPlaceLikeCount(placeId)
-	if getErr.Err != nil {
+	if getErr != nil {
 		log.Println(getErr)
 		ctx.Status(getErr.Code)
 		return ctx.JSON(getErr)
@@ -308,7 +308,7 @@ func IsLiked(ctx *fiber.Ctx) error {
 	placeId := ctx.Query("placeId")
 	userId := ctx.Query("userId")
 	result, getErr := usecase.IsLiked(placeId, userId)
-	if getErr.Err != nil {
+	if getErr != nil {
 		log.Println(getErr)
 		ctx.Status(getErr.Code)
 		return ctx.JSON(getErr)
