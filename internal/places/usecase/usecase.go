@@ -21,27 +21,27 @@ func CreateFilter(body placeStruct.Filter, isAdmin string) ([]placeStruct.Filter
 	return repository.CreateFilter(body)
 }
 
-//func CreatePlace(body placeStruct.Place, user, isLandLord string) (placeStruct.Place, internal.HackError) {
-//	if isLandLord == "false" {
-//		return placeStruct.Place{}, internal.HackError{Code: 400, Err: errors.New("you must be landlord"), Timestamp: time.Now()}
-//	}
-//
-//	userID, err := strconv.ParseInt(user, 10, 64)
-//	if err != nil {
-//		log.Println(err)
-//		return placeStruct.Place{}, internal.HackError{Code: 500, Err: err, Timestamp: time.Now()}
-//	}
-//
-//	result, repErr := repository.CreatePlace(body)
-//	if repErr.Err != nil {
-//		return result, repErr
-//	}
-//	landUpdateError := user.CreateNewPlace(result.PlaceId, userID)
-//	if landUpdateError.Err != nil {
-//		return placeStruct.Place{}, landUpdateError
-//	}
-//	return result, repErr
-//}
+func CreatePlace(body placeStruct.Place, user, isLandLord string) (placeStruct.Place, internal.HackError) {
+	if isLandLord == "false" {
+		return placeStruct.Place{}, internal.HackError{Code: 400, Err: errors.New("you must be landlord"), Timestamp: time.Now()}
+	}
+
+	userID, err := strconv.ParseInt(user, 10, 64)
+	if err != nil {
+		log.Println(err)
+		return placeStruct.Place{}, internal.HackError{Code: 500, Err: err, Timestamp: time.Now()}
+	}
+
+	result, repErr := repository.CreatePlace(body)
+	if repErr.Err != nil {
+		return result, repErr
+	}
+	landUpdateError := user.CreateNewPlace(result.PlaceId, userID)
+	if landUpdateError.Err != nil {
+		return placeStruct.Place{}, landUpdateError
+	}
+	return result, repErr
+}
 
 func CreateOrder(body placeStruct.Calendar) ([]placeStruct.Calendar, internal.HackError) {
 	return repository.CreateOrder(body)
@@ -140,24 +140,24 @@ func GetMyOrders(userId string) ([]placeStruct.Calendar, internal.HackError) {
 	return repository.GetMyOrders(user)
 }
 
-//func GetMyPlace(userId, isLandLord string) ([]placeStruct.LandPlace, internal.HackError) {
-//
-//	landId, err := strconv.ParseInt(userId, 10, 64)
-//	if err != nil {
-//		log.Println(err)
-//		return []placeStruct.LandPlace{}, internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
-//	}
-//	if isLandLord == "false" {
-//		return []placeStruct.LandPlace{}, internal.HackError{Code: 401, Err: errors.New("you must be landlord"), Timestamp: time.Now()}
-//	}
-//
-//	placesId, err := user.GetPlacesLandlord(landId)
-//	if err != nil {
-//		log.Println(err)
-//		return []placeStruct.LandPlace{}, internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
-//	}
-//	return repository.GetLandPlaces(placesId)
-//}
+func GetMyPlace(userId, isLandLord string) ([]placeStruct.LandPlace, internal.HackError) {
+
+	landId, err := strconv.ParseInt(userId, 10, 64)
+	if err != nil {
+		log.Println(err)
+		return []placeStruct.LandPlace{}, internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
+	}
+	if isLandLord == "false" {
+		return []placeStruct.LandPlace{}, internal.HackError{Code: 401, Err: errors.New("you must be landlord"), Timestamp: time.Now()}
+	}
+
+	placesId, err := user.GetPlacesLandlord(landId)
+	if err != nil {
+		log.Println(err)
+		return []placeStruct.LandPlace{}, internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
+	}
+	return repository.GetLandPlaces(placesId)
+}
 
 func CreateComment(user string, place string, body placeStruct.CommentMessage) ([]placeStruct.Comment, internal.HackError) {
 	placeId, err := strconv.ParseInt(place, 10, 64)

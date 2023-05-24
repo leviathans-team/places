@@ -40,28 +40,28 @@ func CreateFilter(ctx *fiber.Ctx) error {
 	return ctx.JSON(result)
 }
 
-//Создание нового места
-//func CreatePlace(ctx *fiber.Ctx) error {
-//	headers := ctx.GetRespHeaders()
-//	isLandLord := headers["Islandlord"]
-//	userId := headers["userId"]
-//	var body placeStruct.Place
-//	err := ctx.BodyParser(&body)
-//	if err != nil {
-//		log.Println(err)
-//		ctx.Status(400)
-//		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
-//	}
-//
-//	body, creationErr := usecase.CreatePlace(body, userId, isLandLord)
-//	if creationErr.Err != nil {
-//		log.Println(err)
-//		ctx.Status(creationErr.Code)
-//		return ctx.JSON(creationErr)
-//	}
-//	return ctx.JSON(body)
-//
-//}
+// Создание нового места
+func CreatePlace(ctx *fiber.Ctx) error {
+	headers := ctx.GetRespHeaders()
+	isLandLord := headers["Islandlord"]
+	userId := headers["userId"]
+	var body placeStruct.Place
+	err := ctx.BodyParser(&body)
+	if err != nil {
+		log.Println(err)
+		ctx.Status(400)
+		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
+	}
+
+	body, creationErr := usecase.CreatePlace(body, userId, isLandLord)
+	if creationErr.Err != nil {
+		log.Println(err)
+		ctx.Status(creationErr.Code)
+		return ctx.JSON(creationErr)
+	}
+	return ctx.JSON(body)
+
+}
 
 // Возвращает все места с учетом фильтра и с учетом даты
 func GetPlaces(ctx *fiber.Ctx) error {
@@ -191,18 +191,18 @@ func SearchPlace(ctx *fiber.Ctx) error {
 }
 
 // вывод собственных мест для лендлорда
-//func GetMyPlaces(ctx *fiber.Ctx) error {
-//	headers := ctx.GetRespHeaders()
-//	userId := headers["Userid"]
-//	isLandLord := headers["Islandlord"]
-//	body, repErr := usecase.GetMyPlace(userId, isLandLord)
-//	if repErr.Err != nil {
-//		log.Println(repErr)
-//		ctx.Status(repErr.Code)
-//		return ctx.JSON(repErr)
-//	}
-//	return ctx.JSON(body)
-//}
+func GetMyPlaces(ctx *fiber.Ctx) error {
+	headers := ctx.GetRespHeaders()
+	userId := headers["Userid"]
+	isLandLord := headers["Islandlord"]
+	body, repErr := usecase.GetMyPlace(userId, isLandLord)
+	if repErr.Err != nil {
+		log.Println(repErr)
+		ctx.Status(repErr.Code)
+		return ctx.JSON(repErr)
+	}
+	return ctx.JSON(body)
+}
 
 // возвращение всех бронирований пользователя
 func GetMyOrders(ctx *fiber.Ctx) error {
