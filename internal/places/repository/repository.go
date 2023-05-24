@@ -203,7 +203,7 @@ func GetPlaces(filterId int, date time.Time, pageNumber int) ([]placeStruct.Plac
 		}
 
 	} else {
-		rows, err := internal.Tools.Connection.Queryx(`SELECT placeId FROM calendar`)
+		rows, err := internal.Tools.Connection.Queryx(`SELECT placeId FROM places`)
 		if err != nil {
 			log.Println(err)
 			return []placeStruct.Place{}, internal.HackError{
@@ -230,7 +230,7 @@ func GetPlaces(filterId int, date time.Time, pageNumber int) ([]placeStruct.Plac
 
 	for i := pageNumber*10 - 10; i < lim; i++ {
 		if filterId != 0 {
-			err := internal.Tools.Connection.Get(&body, `SELECT * FROM places WHERE placeId = $1 and filterId = $2`, placesId[i], filterId)
+			err := internal.Tools.Connection.Get(&body, `SELECT * FROM places WHERE placeId = $1 and filterId = $2 and approved = TRUE`, placesId[i], filterId)
 			if err != nil {
 				log.Println(err)
 				return []placeStruct.Place{}, internal.HackError{
@@ -241,7 +241,7 @@ func GetPlaces(filterId int, date time.Time, pageNumber int) ([]placeStruct.Plac
 			}
 			result = append(result, body)
 		} else {
-			err := internal.Tools.Connection.Get(&body, `SELECT * FROM places WHERE placeId = $1`, placesId[i])
+			err := internal.Tools.Connection.Get(&body, `SELECT * FROM places WHERE placeId = $1 and approved = TRUE`, placesId[i])
 			if err != nil {
 				log.Println(err)
 				return []placeStruct.Place{}, internal.HackError{
@@ -300,7 +300,8 @@ func InitPlaceTables() internal.HackError {
     equipment TEXT NOT NULL , 
     rentersCount INTEGER NOT NULL , 
     meta TEXT[] NOT NULL,
-    rating FLOAT NOT NULL DEFAULT 0
+    rating FLOAT NOT NULL DEFAULT 0,
+    approved BOOL DEFAULT FALSE
      );`)
 	if err != nil {
 		log.Println(err)
@@ -435,4 +436,35 @@ func CreateComment(body placeStruct.Comment) ([]placeStruct.Comment, internal.Ha
 		return []placeStruct.Comment{}, internal.HackError{Code: 500, Err: err, Timestamp: time.Now()}
 	}
 	return GetComments(body.PlaceId)
+}
+
+func GetNotApprovedPlaces() ([]placeStruct.Place, internal.HackError) {
+	var result []placeStruct.Place
+	var tmp placeStruct.Place
+	rows, err := internal.Tools.Connection.Queryx(`SELECT * FROM places WHERE approved = FALSE`)
+	if err != nil {
+		log.Println(err)
+		return []placeStruct.Place{}, internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
+
+	for rows.Next() {
+		if err = rows.Scan(&tmp); err != nil {
+			log.Println(err)
+		}
+		result = append(result, tmp)
+	}
+	return result, internal.HackError{}
+}
+
+func MakeApprove(placeId int64) (placeStruct.Place, internal.HackError) {
+	var approved bool
+	err := internal.Tools.Connection.QueryRowx(`UPDATE places SET approved = TRUE WHERE placeid = $1 returning approved`, placeId).Scan(&approved)
+	if err != nil {
+		return placeStruct.Place{}, internal.HackError{Code: 500, Err: err, Timestamp: time.Now()}
+	}
+	return GetOnePlace(placeId)
 }

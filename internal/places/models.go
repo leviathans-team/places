@@ -54,3 +54,8 @@ type CommentMessage struct {
 	Message string  `json:"message"`
 	Mark    float64 `json:"mark"`
 }
+
+type Approving struct {
+	AdminId int64 `json:"adminId"`
+	PlaceId int64 `json:"placeId"`
+}

@@ -23,4 +23,7 @@ func Hearing(app *fiber.App) {
 	myGroup.Get("/searchPlace", hendlers.SearchPlace)
 	myGroup.Post("/curent/comments/createComment", hendlers.CreateComment)
 	myGroup.Get("/curent/comments", hendlers.GetComment)
+
+	app.Get("/adminPlaces/placeForApproving", hendlers.GetNotApprovedPlace)
+	app.Get("/adminPlaces/placeForApproving/approve", hendlers.MakeApproved)
 }
