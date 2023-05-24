@@ -5,7 +5,7 @@ import (
 	"golang-pkg/internal"
 	placeStruct "golang-pkg/internal/places"
 	"golang-pkg/internal/places/repository"
-	user "golang-pkg/internal/user/usecase"
+	userPanel "golang-pkg/internal/user/usecase"
 	"log"
 	"strconv"
 	"time"
@@ -34,11 +34,11 @@ func CreatePlace(body placeStruct.Place, user, isLandLord string) (placeStruct.P
 	}
 
 	result, repErr := repository.CreatePlace(body)
-	if repErr.Err != nil {
+	if repErr != nil {
 		return result, repErr
 	}
-	landUpdateError := user.CreateNewPlace(result.PlaceId, userID)
-	if landUpdateError.Err != nil {
+	landUpdateError := userPanel.CreateNewPlace(result.PlaceId, userID)
+	if landUpdateError != nil {
 		return placeStruct.Place{}, landUpdateError
 	}
 	return result, repErr
@@ -152,8 +152,8 @@ func GetMyPlace(userId, isLandLord string) ([]placeStruct.LandPlace, *internal.H
 		return []placeStruct.LandPlace{}, &internal.HackError{Code: 401, Err: errors.New("you must be landlord"), Timestamp: time.Now()}
 	}
 
-	placesId, err := user.GetPlacesLandlord(landId)
-	if err != nil {
+	placesId, hackErr := userPanel.GetPlacesLandlord(landId)
+	if hackErr != nil {
 		log.Println(err)
 		return []placeStruct.LandPlace{}, &internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
 	}
@@ -212,7 +212,7 @@ func CreateLike(place, user string) *internal.HackError {
 		log.Println(err)
 		return &internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
 	}
-	if _, placeExistErr := repository.GetOnePlace(placeId); placeExistErr.Err != nil {
+	if _, placeExistErr := repository.GetOnePlace(placeId); placeExistErr != nil {
 		return &internal.HackError{Code: 404, Err: err, Timestamp: time.Now()}
 	}
 
@@ -226,7 +226,7 @@ func GetPlaceLikeCount(place string) (int64, *internal.HackError) {
 		log.Println(err)
 		return 0, &internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
 	}
-	if _, placeExistErr := repository.GetOnePlace(placeId); placeExistErr.Err != nil {
+	if _, placeExistErr := repository.GetOnePlace(placeId); placeExistErr != nil {
 		return 0, &internal.HackError{Code: 404, Err: err, Timestamp: time.Now()}
 	}
 
