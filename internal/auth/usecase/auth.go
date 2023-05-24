@@ -18,11 +18,11 @@ var (
 	singInKey = "rhnJHfjhrgjke8Nihe843Hgherekrr3e4fgrf"
 )
 
-func SingUp(user *auth.UserForRegister) internal.HackError {
+func SingUp(user *auth.UserForRegister) *internal.HackError {
 	existPhone, err := repository.ExistsUser(user.Phone)
 	if err != nil {
 		log.Print(err)
-		return internal.HackError{
+		return &internal.HackError{
 			Code:      500,
 			Err:       err,
 			Timestamp: time.Now(),
@@ -31,7 +31,7 @@ func SingUp(user *auth.UserForRegister) internal.HackError {
 	existEmail, err := repository.ExistsUser(user.Email)
 	if err != nil {
 		log.Print(err)
-		return internal.HackError{
+		return &internal.HackError{
 			Code:      500,
 			Err:       err,
 			Timestamp: time.Now(),
@@ -40,7 +40,7 @@ func SingUp(user *auth.UserForRegister) internal.HackError {
 
 	if existEmail || existPhone {
 		log.Print("invaluable data")
-		return internal.HackError{
+		return &internal.HackError{
 			Code:      400,
 			Err:       errors.New("invaluable data"),
 			Message:   "the number or email is already taken",
@@ -51,52 +51,52 @@ func SingUp(user *auth.UserForRegister) internal.HackError {
 	return repository.CreateUser(user)
 }
 
-func SingIn(user *auth.UserForLogin) (string, internal.HackError) {
+func SingIn(user *auth.UserForLogin) (string, *internal.HackError) {
 	isExist, err := repository.ExistsUser(user.Login)
 	if err != nil {
 		log.Print(err)
-		return "", internal.HackError{
+		return "", &internal.HackError{
 			Code:      500,
 			Err:       err,
 			Timestamp: time.Now(),
 		}
 	}
 	if !isExist {
-		return "", internal.HackError{
+		return "", &internal.HackError{
 			Code:      404,
 			Err:       errors.New("user not found"),
 			Message:   "this email and phone is not found",
 			Timestamp: time.Now(),
 		}
 	}
-	userId, res := repository.TrySingIn(user.Login, user.Password)
-	if res.Err != nil {
-		return "", res
+	userId, hackErr := repository.TrySingIn(user.Login, user.Password)
+	if hackErr != nil {
+		return "", hackErr
 	}
 
 	token, hackErr := GenerateToken(userId)
 
-	if hackErr.Err != nil {
+	if hackErr != nil {
 		return "", hackErr
 	}
 
 	// return jwt
 	fmt.Println("Success login!")
 
-	return token, internal.HackError{}
+	return token, nil
 }
 
-func SingUpBusiness(user *auth.BusinessUserForRegister) internal.HackError {
+func SingUpBusiness(user *auth.BusinessUserForRegister) *internal.HackError {
 	isExist, err := repository.ExistsUser(user.Phone)
 	if err != nil {
-		return internal.HackError{
+		return &internal.HackError{
 			Code:      500,
 			Err:       err,
 			Timestamp: time.Now(),
 		}
 	}
 	if isExist {
-		return internal.HackError{
+		return &internal.HackError{
 			Code:      400,
 			Err:       errors.New("invaluable data"),
 			Message:   "the number or email is already taken",
@@ -106,14 +106,14 @@ func SingUpBusiness(user *auth.BusinessUserForRegister) internal.HackError {
 
 	isExist, err = repository.ExistsUser(user.Email)
 	if err != nil {
-		return internal.HackError{
+		return &internal.HackError{
 			Code:      500,
 			Err:       err,
 			Timestamp: time.Now(),
 		}
 	}
 	if isExist {
-		return internal.HackError{
+		return &internal.HackError{
 			Code:      400,
 			Err:       errors.New("invaluable data"),
 			Message:   "the number or email is already taken",
@@ -122,20 +122,20 @@ func SingUpBusiness(user *auth.BusinessUserForRegister) internal.HackError {
 	}
 
 	hackErr := repository.CreateBusinessUser(user)
-	if hackErr.Err != nil {
+	if hackErr != nil {
 		return hackErr
 	}
-	return internal.HackError{}
+	return nil
 }
 
-func GenerateToken(userId int64) (string, internal.HackError) {
+func GenerateToken(userId int64) (string, *internal.HackError) {
 	isLadLord, err := user.IsLandlord(userId)
-	if err.Err != nil {
+	if err != nil {
 		log.Print(err)
 		return "", err
 	}
 	lvlAdmin, err := user.IsAdmin(userId)
-	if err.Err != nil {
+	if err != nil {
 		log.Print(err)
 		return "", err
 	}
@@ -154,10 +154,10 @@ func GenerateToken(userId int64) (string, internal.HackError) {
 		log.Fatal("FIX 110 line in repository")
 	}
 
-	return tokenString, internal.HackError{}
+	return tokenString, nil
 }
 
-func ParseToken(accessToken string) (*internal.UserHeaders, internal.HackError) {
+func ParseToken(accessToken string) (*internal.UserHeaders, *internal.HackError) {
 	token, err := jwt.ParseWithClaims(accessToken, &auth.TokenClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("invalid signing method")
@@ -167,7 +167,7 @@ func ParseToken(accessToken string) (*internal.UserHeaders, internal.HackError) 
 	})
 	if err != nil {
 		log.Print("invalid signing method")
-		return nil, internal.HackError{
+		return nil, &internal.HackError{
 			Code:      400,
 			Err:       errors.New("invalid signing method"),
 			Timestamp: time.Now(),
@@ -175,7 +175,7 @@ func ParseToken(accessToken string) (*internal.UserHeaders, internal.HackError) 
 	}
 	claims, ok := token.Claims.(*auth.TokenClaims)
 	if !ok {
-		return nil, internal.HackError{
+		return nil, &internal.HackError{
 			Code:      400,
 			Err:       errors.New("token claims are not a type"),
 			Timestamp: time.Now(),
@@ -186,5 +186,5 @@ func ParseToken(accessToken string) (*internal.UserHeaders, internal.HackError) 
 		UserId:     claims.UserId,
 		IsLandLord: claims.IsLandLord,
 		AdminLevel: claims.AdminLevel,
-	}, internal.HackError{}
+	}, nil
 }

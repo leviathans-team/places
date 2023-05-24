@@ -43,14 +43,14 @@ func login(ctx *fiber.Ctx) error {
 		return ctx.JSON(err)
 	}
 
-	errors := auth.ValidateStruct(user)
-	if errors != nil {
+	errorsValidate := auth.ValidateStruct(user)
+	if errorsValidate != nil {
 		ctx.Status(400)
-		return ctx.JSON(errors)
+		return ctx.JSON(errorsValidate)
 	}
 
 	token, err := usecase.SingIn(user)
-	if err.Err != nil {
+	if err != nil {
 		return ctx.JSON(err)
 	}
 	return ctx.JSON(token)
@@ -69,13 +69,13 @@ func register(c *fiber.Ctx) error {
 		return c.JSON(err)
 	}
 
-	errors := auth.ValidateStruct(user)
-	if errors != nil {
+	errorsValidate := auth.ValidateStruct(user)
+	if errorsValidate != nil {
 		c.Status(400)
-		return c.JSON(errors)
+		return c.JSON(errorsValidate)
 	}
 	err := usecase.SingUp(user)
-	if err.Err != nil {
+	if err != nil {
 		return c.JSON(err)
 	}
 	// ...
@@ -95,13 +95,13 @@ func landlordRegister(ctx *fiber.Ctx) error {
 		ctx.Status(err.Code)
 		return ctx.JSON(err)
 	}
-	errors := auth.ValidateStruct(user)
-	if errors != nil {
+	errorsValidate := auth.ValidateStruct(user)
+	if errorsValidate != nil {
 		ctx.Status(400)
-		return ctx.JSON(errors)
+		return ctx.JSON(errorsValidate)
 	}
 	err := usecase.SingUpBusiness(user)
-	if err.Err != nil {
+	if err != nil {
 		return ctx.JSON(err)
 	}
 	// ...

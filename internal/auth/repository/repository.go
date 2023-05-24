@@ -22,7 +22,7 @@ func ExistsUser(login string) (bool, error) {
 	return isExists, nil
 }
 
-func CreateUser(user *auth.UserForRegister) internal.HackError {
+func CreateUser(user *auth.UserForRegister) *internal.HackError {
 	var userId int64
 	passwordHash := md5.New()
 	passwordHash.Write([]byte(user.Password))
@@ -33,7 +33,7 @@ func CreateUser(user *auth.UserForRegister) internal.HackError {
 values ($1, $2, $3, $4, $5) returning user_id`, user.Name, user.Surname, user.Patronymic, user.Email, user.Phone).Scan(&userId)
 	if err != nil {
 		log.Print(err)
-		return internal.HackError{
+		return &internal.HackError{
 			Code:      500,
 			Err:       err,
 			Timestamp: time.Now(),
@@ -43,17 +43,17 @@ values ($1, $2, $3, $4, $5) returning user_id`, user.Name, user.Surname, user.Pa
 	_, err = internal.Tools.Connection.Exec(`insert into users_login values ($1, $2)`, userId, stringPasswordHash)
 	if err != nil {
 		log.Print(err)
-		return internal.HackError{
+		return &internal.HackError{
 			Code:      500,
 			Err:       err,
 			Timestamp: time.Now(),
 		}
 	}
 
-	return internal.HackError{}
+	return nil
 }
 
-func CreateBusinessUser(user *auth.BusinessUserForRegister) internal.HackError {
+func CreateBusinessUser(user *auth.BusinessUserForRegister) *internal.HackError {
 	var userId int64
 	passwordHash := md5.New()
 	passwordHash.Write([]byte(user.Password))
@@ -64,7 +64,7 @@ func CreateBusinessUser(user *auth.BusinessUserForRegister) internal.HackError {
 values ($1, $2, $3, $4, $5) returning user_id`, user.Name, user.Surname, user.Patronymic, user.Email, user.Phone).Scan(&userId)
 	if err != nil {
 		log.Print(err)
-		return internal.HackError{
+		return &internal.HackError{
 			Code:      500,
 			Err:       err,
 			Timestamp: time.Now(),
@@ -74,7 +74,7 @@ values ($1, $2, $3, $4, $5) returning user_id`, user.Name, user.Surname, user.Pa
 	_, err = internal.Tools.Connection.Exec(`insert into users_login values ($1, $2)`, userId, stringPasswordHash)
 	if err != nil {
 		log.Print(err)
-		return internal.HackError{
+		return &internal.HackError{
 			Code:      500,
 			Err:       err,
 			Timestamp: time.Now(),
@@ -85,16 +85,16 @@ values ($1, $2, $3, $4, $5) returning user_id`, user.Name, user.Surname, user.Pa
 values ($1,$2,$3,$4)`, userId, user.Post, user.LegalEntity, user.INN)
 	if err != nil {
 		log.Print(err)
-		return internal.HackError{
+		return &internal.HackError{
 			Code:      500,
 			Err:       err,
 			Timestamp: time.Now(),
 		}
 	}
-	return internal.HackError{}
+	return nil
 }
 
-func TrySingIn(login, password string) (int64, internal.HackError) {
+func TrySingIn(login, password string) (int64, *internal.HackError) {
 	result := false
 	var userId int64
 	passwordHash := md5.New()
@@ -105,7 +105,7 @@ func TrySingIn(login, password string) (int64, internal.HackError) {
 	err := internal.Tools.Connection.QueryRowx(`select user_id from users_info where (email=$1 or phone=$1)`, login).Scan(&userId)
 	if err != nil {
 		log.Print(err)
-		return -1, internal.HackError{
+		return -1, &internal.HackError{
 			Code:      500,
 			Err:       err,
 			Timestamp: time.Now(),
@@ -115,7 +115,7 @@ func TrySingIn(login, password string) (int64, internal.HackError) {
 	err = internal.Tools.Connection.QueryRowx(`select exists(select * from users_login where login_id=$1 and password_hash=$2)`, userId, stringPasswordHash).Scan(&result)
 	if err != nil {
 		log.Print(err)
-		return -1, internal.HackError{
+		return -1, &internal.HackError{
 			Code:      500,
 			Err:       err,
 			Timestamp: time.Now(),
@@ -124,12 +124,12 @@ func TrySingIn(login, password string) (int64, internal.HackError) {
 
 	if !result {
 		log.Print(errors.New("failed login"))
-		return -1, internal.HackError{
+		return -1, &internal.HackError{
 			Code:      401,
 			Err:       errors.New("failed login"),
 			Message:   "login or password incorrect",
 			Timestamp: time.Now(),
 		}
 	}
-	return userId, internal.HackError{}
+	return userId, nil
 }
