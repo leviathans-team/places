@@ -39,7 +39,7 @@ func main() {
 
 	var app = fiber.New()
 	handlers.SetupRoutesForAuth(app)
-	userHandlers.SetupRoutesForAuth(app)
+	userHandlers.UserPanel(app)
 	delivery.Hearing(app) // создай группу для сових ручек, в будующем будет проще поддерживать/фиксить/строить код
 
 	err = app.Listen(":3000")

@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func SetupRoutesForAuth(app *fiber.App) {
+func UserPanel(app *fiber.App) {
 	//commonUser := app.Group("")
 	//
 	//businessUser := app.Group("")
