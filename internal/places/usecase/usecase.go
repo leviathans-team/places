@@ -122,3 +122,11 @@ func GetComment(place string) ([]placeStruct.Comment, internal.HackError) {
 	}
 	return repository.GetComments(placeId)
 }
+
+func GetNotApprovedPlaces() ([]placeStruct.Place, internal.HackError) {
+	return repository.GetNotApprovedPlaces()
+}
+
+func MakeApproved(placeId int64) (placeStruct.Place, internal.HackError) {
+	return repository.MakeApprove(placeId)
+}

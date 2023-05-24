@@ -208,7 +208,7 @@ func CreateOrder(ctx *fiber.Ctx) error {
 	}
 	result, creationErr := usecase.CreateOrder(body)
 	if creationErr.Err != nil {
-		log.Println(err)
+		log.Println(creationErr.Err)
 		ctx.Status(creationErr.Code)
 		return ctx.JSON(creationErr)
 	}
@@ -225,7 +225,7 @@ func UpdatePlace(ctx *fiber.Ctx) error {
 	}
 	updateErr := usecase.UpdatePlace(body)
 	if updateErr.Err != nil {
-		log.Println(err)
+		log.Println(updateErr.Err)
 		ctx.Status(updateErr.Code)
 		return ctx.JSON(updateErr)
 	}
@@ -310,6 +310,43 @@ func GetComment(ctx *fiber.Ctx) error {
 		log.Println(repErr)
 		ctx.Status(repErr.Code)
 		return ctx.JSON(repErr)
+	}
+	return ctx.JSON(result)
+}
+
+func GetNotApprovedPlace(ctx *fiber.Ctx) error {
+	headers := ctx.GetRespHeaders()
+	isAdmin := headers["Isadmin"]
+	if isAdmin == "" {
+		ctx.Status(400)
+		return ctx.JSON(models.HackError{Code: 400, Err: errors.New("you can do this"), Timestamp: time.Now()})
+	}
+	body, creationErr := usecase.GetNotApprovedPlaces()
+	if creationErr.Err != nil {
+		ctx.Status(creationErr.Code)
+		return ctx.JSON(creationErr)
+	}
+	return ctx.JSON(body)
+}
+
+func MakeApproved(ctx *fiber.Ctx) error {
+	headers := ctx.GetRespHeaders()
+	isAdmin := headers["Isadmin"]
+	if isAdmin == "" {
+		ctx.Status(400)
+		return ctx.JSON(models.HackError{Code: 400, Err: errors.New("you can do this"), Timestamp: time.Now()})
+	}
+	var body placeStruct.Approving
+	err := ctx.BodyParser(&body)
+	if err != nil {
+		log.Println(err)
+		ctx.Status(400)
+		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
+	}
+	result, creationErr := usecase.MakeApproved(body.PlaceId)
+	if creationErr.Err != nil {
+		ctx.Status(creationErr.Code)
+		return ctx.JSON(creationErr)
 	}
 	return ctx.JSON(result)
 }
