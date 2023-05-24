@@ -2,11 +2,13 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/template/html"
 	"golang-pkg/config"
 	models "golang-pkg/internal"
 	"golang-pkg/internal/auth/handlers"
 	"golang-pkg/internal/places/delivery"
 	userHandlers "golang-pkg/internal/user/handlers"
+	"golang-pkg/internal/places/repository"
 	"golang-pkg/pkg/db"
 	"golang-pkg/pkg/logger"
 	"log"
@@ -37,11 +39,15 @@ func main() {
 	}
 	//кваврп
 
-	var app = fiber.New()
-	handlers.SetupRoutesForAuth(app)
-	userHandlers.SetupRoutesForAuth(app)
-	delivery.Hearing(app) // создай группу для сових ручек, в будующем будет проще поддерживать/фиксить/строить код
+	engine := html.New("./views", ".html")
 
+	app := fiber.New(fiber.Config{
+		Views: engine,
+	})
+
+	handlers.SetupRoutesForAuth(app)
+	delivery.Hearing(app) // создай группу для сових ручек, в будующем будет проще поддерживать/фиксить/строить код
+	repository.InitPlaceTables()
 	err = app.Listen(":3000")
 	if err != nil {
 		log.Fatal(err)
