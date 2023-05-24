@@ -59,3 +59,9 @@ type Approving struct {
 	AdminId int64 `json:"adminId"`
 	PlaceId int64 `json:"placeId"`
 }
+
+type Likes struct {
+	LikeId  int64 `json:"likeId"`
+	PlaceId int64 `json:"placeId"`
+	UserId  int64 `json:"userId"`
+}

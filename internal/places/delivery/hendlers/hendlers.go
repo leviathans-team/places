@@ -40,28 +40,28 @@ func CreateFilter(ctx *fiber.Ctx) error {
 	return ctx.JSON(result)
 }
 
-// Создание нового места
-func CreatePlace(ctx *fiber.Ctx) error {
-	headers := ctx.GetRespHeaders()
-	isLandLord := headers["Islandlord"]
-	userId := headers["userId"]
-	var body placeStruct.Place
-	err := ctx.BodyParser(&body)
-	if err != nil {
-		log.Println(err)
-		ctx.Status(400)
-		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
-	}
-
-	body, creationErr := usecase.CreatePlace(body, userId, isLandLord)
-	if creationErr.Err != nil {
-		log.Println(err)
-		ctx.Status(creationErr.Code)
-		return ctx.JSON(creationErr)
-	}
-	return ctx.JSON(body)
-
-}
+//Создание нового места
+//func CreatePlace(ctx *fiber.Ctx) error {
+//	headers := ctx.GetRespHeaders()
+//	isLandLord := headers["Islandlord"]
+//	userId := headers["userId"]
+//	var body placeStruct.Place
+//	err := ctx.BodyParser(&body)
+//	if err != nil {
+//		log.Println(err)
+//		ctx.Status(400)
+//		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
+//	}
+//
+//	body, creationErr := usecase.CreatePlace(body, userId, isLandLord)
+//	if creationErr.Err != nil {
+//		log.Println(err)
+//		ctx.Status(creationErr.Code)
+//		return ctx.JSON(creationErr)
+//	}
+//	return ctx.JSON(body)
+//
+//}
 
 // Возвращает все места с учетом фильтра и с учетом даты
 func GetPlaces(ctx *fiber.Ctx) error {
@@ -191,18 +191,18 @@ func SearchPlace(ctx *fiber.Ctx) error {
 }
 
 // вывод собственных мест для лендлорда
-func GetMyPlaces(ctx *fiber.Ctx) error {
-	headers := ctx.GetRespHeaders()
-	userId := headers["Userid"]
-	isLandLord := headers["Islandlord"]
-	body, repErr := usecase.GetMyPlace(userId, isLandLord)
-	if repErr.Err != nil {
-		log.Println(repErr)
-		ctx.Status(repErr.Code)
-		return ctx.JSON(repErr)
-	}
-	return ctx.JSON(body)
-}
+//func GetMyPlaces(ctx *fiber.Ctx) error {
+//	headers := ctx.GetRespHeaders()
+//	userId := headers["Userid"]
+//	isLandLord := headers["Islandlord"]
+//	body, repErr := usecase.GetMyPlace(userId, isLandLord)
+//	if repErr.Err != nil {
+//		log.Println(repErr)
+//		ctx.Status(repErr.Code)
+//		return ctx.JSON(repErr)
+//	}
+//	return ctx.JSON(body)
+//}
 
 // возвращение всех бронирований пользователя
 func GetMyOrders(ctx *fiber.Ctx) error {
@@ -253,11 +253,8 @@ func GetComment(ctx *fiber.Ctx) error {
 func GetNotApprovedPlace(ctx *fiber.Ctx) error {
 	headers := ctx.GetRespHeaders()
 	isAdmin := headers["Isadmin"]
-	if isAdmin == "" {
-		ctx.Status(400)
-		return ctx.JSON(models.HackError{Code: 400, Err: errors.New("you can do this"), Timestamp: time.Now()})
-	}
-	body, creationErr := usecase.GetNotApprovedPlaces()
+
+	body, creationErr := usecase.GetNotApprovedPlaces(isAdmin)
 	if creationErr.Err != nil {
 		ctx.Status(creationErr.Code)
 		return ctx.JSON(creationErr)
@@ -268,21 +265,53 @@ func GetNotApprovedPlace(ctx *fiber.Ctx) error {
 func MakeApproved(ctx *fiber.Ctx) error {
 	headers := ctx.GetRespHeaders()
 	isAdmin := headers["Isadmin"]
-	if isAdmin == "" {
-		ctx.Status(400)
-		return ctx.JSON(models.HackError{Code: 400, Err: errors.New("you can do this"), Timestamp: time.Now()})
-	}
 	var body placeStruct.Approving
 	err := ctx.BodyParser(&body)
+	placeId := body.PlaceId
 	if err != nil {
 		log.Println(err)
 		ctx.Status(400)
 		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
 	}
-	result, creationErr := usecase.MakeApproved(body.PlaceId)
+	result, creationErr := usecase.MakeApproved(placeId, isAdmin)
 	if creationErr.Err != nil {
 		ctx.Status(creationErr.Code)
 		return ctx.JSON(creationErr)
+	}
+	return ctx.JSON(result)
+}
+
+func CreateLike(ctx *fiber.Ctx) error {
+	placeId := ctx.Query("placeId")
+	userId := ctx.Query("userId")
+	createErr := usecase.CreateLike(placeId, userId)
+	if createErr.Err != nil {
+		log.Println(createErr)
+		ctx.Status(createErr.Code)
+		return ctx.JSON(createErr)
+	}
+	return ctx.JSON("OK!")
+}
+
+func GetPlaceLikeCount(ctx *fiber.Ctx) error {
+	placeId := ctx.Query("placeId")
+	result, getErr := usecase.GetPlaceLikeCount(placeId)
+	if getErr.Err != nil {
+		log.Println(getErr)
+		ctx.Status(getErr.Code)
+		return ctx.JSON(getErr)
+	}
+	return ctx.JSON(result)
+}
+
+func IsLiked(ctx *fiber.Ctx) error {
+	placeId := ctx.Query("placeId")
+	userId := ctx.Query("userId")
+	result, getErr := usecase.IsLiked(placeId, userId)
+	if getErr.Err != nil {
+		log.Println(getErr)
+		ctx.Status(getErr.Code)
+		return ctx.JSON(getErr)
 	}
 	return ctx.JSON(result)
 }

@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"golang-pkg/internal"
 	placeStruct "golang-pkg/internal/places"
 	"log"
@@ -257,7 +258,7 @@ func GetPlaces(filterId int, date time.Time, pageNumber int) ([]placeStruct.Plac
 }
 
 func InitPlaceTables() internal.HackError {
-	_, err := internal.Tools.Connection.Exec(`CREATE TABLE filters (
+	_, err := internal.Tools.Connection.Exec(`CREATE TABLE IF NOT EXISTS  filters (
     	filterId BIGSERIAL PRIMARY KEY NOT NULL ,
     	filterName TEXT NOT NULL
 		);`)
@@ -269,7 +270,7 @@ func InitPlaceTables() internal.HackError {
 			Timestamp: time.Now(),
 		}
 	}
-	_, err = internal.Tools.Connection.Exec(`CREATE TABLE comments (
+	_, err = internal.Tools.Connection.Exec(`CREATE TABLE IF NOT EXISTS  comments (
     	coomentId BIGSERIAL PRIMARY KEY NOT NULL,
     	placeId BIGSERIAL NOT NULL ,
     	userId BIGSERIAL NOT NULL,
@@ -284,7 +285,7 @@ func InitPlaceTables() internal.HackError {
 			Timestamp: time.Now(),
 		}
 	}
-	_, err = internal.Tools.Connection.Exec(`CREATE TABLE places (
+	_, err = internal.Tools.Connection.Exec(`CREATE TABLE IF NOT EXISTS  places (
     placeId BIGSERIAL PRIMARY KEY NOT NULL,
     placeName TEXT NOT NULL,
     filterId BIGINT NOT NULL,
@@ -311,7 +312,7 @@ func InitPlaceTables() internal.HackError {
 			Timestamp: time.Now(),
 		}
 	}
-	_, err = internal.Tools.Connection.Exec(`CREATE TABLE calendar (
+	_, err = internal.Tools.Connection.Exec(`CREATE TABLE IF NOT EXISTS  calendar (
     	bookId BIGSERIAL PRIMARY KEY NOT NULL ,
     	placeId BIGINT NOT NULL ,
     	timeFrom DATE NOT NULL,
@@ -326,11 +327,26 @@ func InitPlaceTables() internal.HackError {
 			Timestamp: time.Now(),
 		}
 	}
+
+	_, err = internal.Tools.Connection.Exec(`CREATE TABLE IF NOT EXISTS  likes (
+    	likeId BIGSERIAL PRIMARY KEY NOT NULL ,
+    	placeId BIGINT NOT NULL ,
+    	userId BIGINT NOT NULL
+		);`)
+	if err != nil {
+		log.Println(err)
+		return internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
+
 	return internal.HackError{}
 }
 
 func DropTable() error {
-	_, err := internal.Tools.Connection.Exec(`DROP TABLE filters, places, calendar`)
+	_, err := internal.Tools.Connection.Exec(`DROP TABLE filters, places, calendar, comment, likes`)
 	if err != nil {
 		log.Println(err)
 	}
@@ -467,4 +483,47 @@ func MakeApprove(placeId int64) (placeStruct.Place, internal.HackError) {
 		return placeStruct.Place{}, internal.HackError{Code: 500, Err: err, Timestamp: time.Now()}
 	}
 	return GetOnePlace(placeId)
+}
+
+func CreateLike(placeId, userId int64) internal.HackError {
+	var likeId int64
+	err := internal.Tools.Connection.QueryRowx(`INSERT INTO likes
+    (placeId, userId) VALUES ($1, $2) returning likeId`, placeId, userId).Scan(&likeId)
+	if err != nil {
+		log.Println(err)
+		return internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
+	return internal.HackError{}
+}
+
+func GetPlaceLikeCount(placeId int64) (int64, internal.HackError) {
+	var likesCount int64
+	err := internal.Tools.Connection.Get(&likesCount, `SELECT COUNT(userid) FROM likes WHERE placeid = $1`, placeId)
+	if err != nil {
+		log.Println(err)
+		return 0, internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
+	return likesCount, internal.HackError{}
+}
+
+func IsLiked(placeId, userId int64) (bool, internal.HackError) {
+	var likesCount int64
+	err := internal.Tools.Connection.Get(&likesCount, `SELECT likeid FROM likes WHERE placeid = $1 and userid = $2`, placeId, userId)
+	if err != nil || err == sql.ErrNoRows {
+		log.Println(err)
+		return false, internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
+	return likesCount != 0, internal.HackError{}
 }
