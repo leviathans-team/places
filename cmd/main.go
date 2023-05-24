@@ -8,6 +8,7 @@ import (
 	"golang-pkg/internal/auth/handlers"
 	"golang-pkg/internal/places/delivery"
 	"golang-pkg/internal/places/repository"
+	userHandlers "golang-pkg/internal/user/handlers"
 	"golang-pkg/pkg/db"
 	"golang-pkg/pkg/logger"
 	"log"
@@ -45,6 +46,7 @@ func main() {
 	})
 
 	handlers.SetupRoutesForAuth(app)
+	userHandlers.UserPanel(app)
 	delivery.Hearing(app) // создай группу для сових ручек, в будующем будет проще поддерживать/фиксить/строить код
 
 	repository.InitPlaceTables()
