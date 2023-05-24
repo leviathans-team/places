@@ -6,7 +6,6 @@ import (
 	placeStruct "golang-pkg/internal/places"
 	"golang-pkg/internal/places/repository"
 	userPanel "golang-pkg/internal/user/usecase"
-	"log"
 	"strconv"
 	"time"
 )
@@ -29,7 +28,7 @@ func CreatePlace(body placeStruct.Place, user, isLandLord string) (placeStruct.P
 
 	userID, err := strconv.ParseInt(user, 10, 64)
 	if err != nil {
-		log.Println(err)
+		internal.Tools.Logger.Println(err)
 		return placeStruct.Place{}, &internal.HackError{Code: 500, Err: err, Timestamp: time.Now()}
 	}
 
@@ -59,7 +58,7 @@ func SearchPlace(key string) ([]placeStruct.Place, *internal.HackError) {
 func GetPlaces(filter, dateH, page string) ([]placeStruct.Place, *internal.HackError) {
 	date, err := time.Parse("2006-01-02 15:04:05", dateH)
 	if err != nil {
-		log.Println(err)
+		internal.Tools.Logger.Println(err)
 		return []placeStruct.Place{}, &internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
 	}
 
@@ -67,7 +66,7 @@ func GetPlaces(filter, dateH, page string) ([]placeStruct.Place, *internal.HackE
 	if filter != "" {
 		filterId, err = strconv.Atoi(filter)
 		if err != nil {
-			log.Println(err)
+			internal.Tools.Logger.Println(err)
 			return []placeStruct.Place{}, &internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
 		}
 	}
@@ -75,7 +74,7 @@ func GetPlaces(filter, dateH, page string) ([]placeStruct.Place, *internal.HackE
 	if page != "" {
 		pageNumber, err = strconv.Atoi(page)
 		if err != nil {
-			log.Println(err)
+			internal.Tools.Logger.Println(err)
 			return []placeStruct.Place{}, &internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
 		}
 	}
@@ -85,7 +84,7 @@ func GetPlaces(filter, dateH, page string) ([]placeStruct.Place, *internal.HackE
 func GetOnePlace(key string) (placeStruct.Place, *internal.HackError) {
 	placeId, err := strconv.ParseInt(key, 10, 64)
 	if err != nil {
-		log.Println(err)
+		internal.Tools.Logger.Println(err)
 		return placeStruct.Place{}, &internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
 	}
 	return repository.GetOnePlace(placeId)
@@ -94,7 +93,7 @@ func DeletePlace(key, isAdmin, isLandLord string) *internal.HackError {
 
 	placeId, err := strconv.ParseInt(key, 10, 64)
 	if err != nil {
-		log.Println(err)
+		internal.Tools.Logger.Println(err)
 		return &internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
 	}
 	if isAdmin == "" || isLandLord == "false" {
@@ -108,7 +107,7 @@ func DeleteFilter(key, isAdmin string) *internal.HackError {
 
 	filterId, err := strconv.ParseInt(key, 10, 64)
 	if err != nil {
-		log.Println(err)
+		internal.Tools.Logger.Println(err)
 		return &internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
 	}
 	if isAdmin == "" {
@@ -121,12 +120,12 @@ func DeleteFilter(key, isAdmin string) *internal.HackError {
 func CancelOrder(order string, user string) *internal.HackError {
 	orderId, err := strconv.ParseInt(order, 10, 64)
 	if err != nil {
-		log.Println(err)
+		internal.Tools.Logger.Println(err)
 		return &internal.HackError{Code: 500, Err: err, Timestamp: time.Now()}
 	}
 	userId, err := strconv.ParseInt(user, 10, 64)
 	if err != nil {
-		log.Println(err)
+		internal.Tools.Logger.Println(err)
 		return &internal.HackError{Code: 500, Err: err, Timestamp: time.Now()}
 	}
 	return repository.CancelOrder(orderId, userId)
@@ -135,7 +134,7 @@ func CancelOrder(order string, user string) *internal.HackError {
 func GetMyOrders(userId string) ([]placeStruct.Calendar, *internal.HackError) {
 	user, err := strconv.ParseInt(userId, 10, 64)
 	if err != nil {
-		log.Println(err)
+		internal.Tools.Logger.Println(err)
 		return []placeStruct.Calendar{}, &internal.HackError{Code: 500, Err: err, Timestamp: time.Now()}
 	}
 	return repository.GetMyOrders(user)
@@ -145,7 +144,7 @@ func GetMyPlace(userId, isLandLord string) ([]placeStruct.LandPlace, *internal.H
 
 	landId, err := strconv.ParseInt(userId, 10, 64)
 	if err != nil {
-		log.Println(err)
+		internal.Tools.Logger.Println(err)
 		return []placeStruct.LandPlace{}, &internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
 	}
 	if isLandLord == "false" {
@@ -154,7 +153,7 @@ func GetMyPlace(userId, isLandLord string) ([]placeStruct.LandPlace, *internal.H
 
 	placesId, hackErr := userPanel.GetPlacesLandlord(landId)
 	if hackErr != nil {
-		log.Println(err)
+		internal.Tools.Logger.Println(err)
 		return []placeStruct.LandPlace{}, &internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
 	}
 	return repository.GetLandPlaces(placesId)
@@ -163,13 +162,13 @@ func GetMyPlace(userId, isLandLord string) ([]placeStruct.LandPlace, *internal.H
 func CreateComment(user string, place string, body placeStruct.CommentMessage) ([]placeStruct.Comment, *internal.HackError) {
 	placeId, err := strconv.ParseInt(place, 10, 64)
 	if err != nil {
-		log.Println(err)
+		internal.Tools.Logger.Println(err)
 		return []placeStruct.Comment{}, &internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
 	}
 
 	userID, err := strconv.ParseInt(user, 10, 64)
 	if err != nil {
-		log.Println(err)
+		internal.Tools.Logger.Println(err)
 		return []placeStruct.Comment{}, &internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
 	}
 	var repBody placeStruct.Comment
@@ -184,7 +183,7 @@ func CreateComment(user string, place string, body placeStruct.CommentMessage) (
 func GetComment(place string) ([]placeStruct.Comment, *internal.HackError) {
 	placeId, err := strconv.ParseInt(place, 10, 64)
 	if err != nil {
-		log.Println(err)
+		internal.Tools.Logger.Println(err)
 		return []placeStruct.Comment{}, &internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
 	}
 	return repository.GetComments(placeId)
@@ -209,7 +208,7 @@ func CreateLike(place, user string) *internal.HackError {
 	placeId, err := strconv.ParseInt(place, 10, 64)
 	userId, err := strconv.ParseInt(user, 10, 64)
 	if err != nil {
-		log.Println(err)
+		internal.Tools.Logger.Println(err)
 		return &internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
 	}
 	if _, placeExistErr := repository.GetOnePlace(placeId); placeExistErr != nil {
@@ -223,7 +222,7 @@ func GetPlaceLikeCount(place string) (int64, *internal.HackError) {
 	placeId, err := strconv.ParseInt(place, 10, 64)
 
 	if err != nil {
-		log.Println(err)
+		internal.Tools.Logger.Println(err)
 		return 0, &internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
 	}
 	if _, placeExistErr := repository.GetOnePlace(placeId); placeExistErr != nil {
@@ -238,7 +237,7 @@ func IsLiked(place, user string) (bool, *internal.HackError) {
 	userId, err := strconv.ParseInt(user, 10, 64)
 	placeId, err := strconv.ParseInt(place, 10, 64)
 	if err != nil {
-		log.Println(err)
+		internal.Tools.Logger.Println(err)
 		return false, &internal.HackError{Code: 400, Err: err, Timestamp: time.Now()}
 	}
 

@@ -6,17 +6,11 @@ import (
 	"golang-pkg/internal"
 	user "golang-pkg/internal/user/usecase"
 	"golang-pkg/middleware"
-	"log"
 	"strconv"
 	"time"
 )
 
 func UserPanel(app *fiber.App) {
-	//commonUser := app.Group("")
-	//
-	//businessUser := app.Group("")
-	//app.Post("test/isAdmin", test)
-
 	admin := app.Group("/admin", middleware.UserIdentification, middleware.AdminIsExist)
 	admin.Put("/setAdmin/id/:userId", setAdmin)
 	admin.Put("/promotionAdmin/id/:userId", promotionAdmin)
@@ -24,14 +18,13 @@ func UserPanel(app *fiber.App) {
 	admin.Put("/unSetAdmin/id/:userId", unSetAdmin)
 	admin.Put("/deleteProfile/id/:userId", deleteProfile)
 	admin.Put("/deleteAdminProfile/id/:userId", deleteAdminProfile)
-
 }
 
 func setAdmin(ctx *fiber.Ctx) error {
 	adminId := ctx.GetRespHeader("userId", "")
 	adminIdInt, err := strconv.ParseInt(adminId, 10, 64)
 	if err != nil {
-		log.Print(errors.New("invalid header userId"))
+		internal.Tools.Logger.Print(errors.New("invalid header userId"))
 		return ctx.JSON(internal.HackError{
 			Code:      400,
 			Err:       errors.New("invalid header userId"),
@@ -40,7 +33,7 @@ func setAdmin(ctx *fiber.Ctx) error {
 	}
 	admLevel := ctx.GetRespHeader("adminLevel", "")
 	if admLevel != "3" {
-		log.Print(errors.New("unauthorized admin"))
+		internal.Tools.Logger.Print(errors.New("unauthorized admin"))
 		ctx.Status(401)
 		return ctx.JSON(internal.HackError{
 			Code:      401,
@@ -73,7 +66,7 @@ func unSetAdmin(ctx *fiber.Ctx) error {
 	adminId := ctx.GetRespHeader("userId", "")
 	adminIdInt, err := strconv.ParseInt(adminId, 10, 64)
 	if err != nil {
-		log.Print(errors.New("invalid header userId"))
+		internal.Tools.Logger.Print(errors.New("invalid header userId"))
 		return ctx.JSON(internal.HackError{
 			Code:      400,
 			Err:       errors.New("invalid header userId"),
@@ -82,7 +75,7 @@ func unSetAdmin(ctx *fiber.Ctx) error {
 	}
 	admLevel := ctx.GetRespHeader("adminLevel", "")
 	if admLevel != "3" {
-		log.Print(errors.New("unauthorized admin"))
+		internal.Tools.Logger.Print(errors.New("unauthorized admin"))
 		ctx.Status(401)
 		return ctx.JSON(internal.HackError{
 			Code:      401,
@@ -116,7 +109,7 @@ func deleteProfile(ctx *fiber.Ctx) error {
 	adminId := ctx.GetRespHeader("userId", "")
 	adminIdInt, err := strconv.ParseInt(adminId, 10, 64)
 	if err != nil {
-		log.Print(errors.New("invalid header userId"))
+		internal.Tools.Logger.Print(errors.New("invalid header userId"))
 		return ctx.JSON(internal.HackError{
 			Code:      400,
 			Err:       errors.New("invalid header userId"),
@@ -125,7 +118,7 @@ func deleteProfile(ctx *fiber.Ctx) error {
 	}
 	admLevel := ctx.GetRespHeader("Adminlevel", "")
 	if !(admLevel == "2" || admLevel == "3") {
-		log.Print(errors.New("unauthorized admin"))
+		internal.Tools.Logger.Print(errors.New("unauthorized admin"))
 		ctx.Status(401)
 		return ctx.JSON(internal.HackError{
 			Code:      401,
@@ -170,7 +163,7 @@ func promotionAdmin(ctx *fiber.Ctx) error {
 	adminId := ctx.GetRespHeader("userId", "")
 	adminIdInt, err := strconv.ParseInt(adminId, 10, 64)
 	if err != nil {
-		log.Print(errors.New("invalid header userId"))
+		internal.Tools.Logger.Print(errors.New("invalid header userId"))
 		return ctx.JSON(internal.HackError{
 			Code:      400,
 			Err:       errors.New("invalid header userId"),
@@ -179,7 +172,7 @@ func promotionAdmin(ctx *fiber.Ctx) error {
 	}
 	admLevel := ctx.GetRespHeader("adminLevel", "")
 	if admLevel != "3" {
-		log.Print(errors.New("unauthorized admin"))
+		internal.Tools.Logger.Print(errors.New("unauthorized admin"))
 		ctx.Status(401)
 		return ctx.JSON(internal.HackError{
 			Code:      401,

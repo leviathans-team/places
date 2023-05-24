@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"errors"
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"golang-pkg/internal"
 	"golang-pkg/internal/auth/usecase"
@@ -105,4 +106,27 @@ func AdminIsExist(ctx *fiber.Ctx) error {
 		})
 	}
 	return ctx.Next()
+}
+
+var validate = validator.New()
+
+type ErrorResponse struct {
+	FailedField string
+	Tag         string
+	Value       string
+}
+
+func ValidateStruct(user interface{}) []*ErrorResponse {
+	var errorResponses []*ErrorResponse
+	err := validate.Struct(user)
+	if err != nil {
+		for _, err := range err.(validator.ValidationErrors) {
+			var element ErrorResponse
+			element.FailedField = err.StructNamespace()
+			element.Tag = err.Tag()
+			element.Value = err.Param()
+			errorResponses = append(errorResponses, &element)
+		}
+	}
+	return errorResponses
 }

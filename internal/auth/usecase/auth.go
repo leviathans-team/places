@@ -8,8 +8,6 @@ import (
 	"golang-pkg/internal/auth"
 	"golang-pkg/internal/auth/repository"
 	user "golang-pkg/internal/user/usecase"
-
-	"log"
 	"time"
 )
 
@@ -21,7 +19,7 @@ var (
 func SingUp(user *auth.UserForRegister) *internal.HackError {
 	existPhone, err := repository.ExistsUser(user.Phone)
 	if err != nil {
-		log.Print(err)
+		internal.Tools.Logger.Print(err)
 		return &internal.HackError{
 			Code:      500,
 			Err:       err,
@@ -30,7 +28,7 @@ func SingUp(user *auth.UserForRegister) *internal.HackError {
 	}
 	existEmail, err := repository.ExistsUser(user.Email)
 	if err != nil {
-		log.Print(err)
+		internal.Tools.Logger.Print(err)
 		return &internal.HackError{
 			Code:      500,
 			Err:       err,
@@ -39,7 +37,7 @@ func SingUp(user *auth.UserForRegister) *internal.HackError {
 	}
 
 	if existEmail || existPhone {
-		log.Print("invaluable data")
+		internal.Tools.Logger.Print("invaluable data")
 		return &internal.HackError{
 			Code:      400,
 			Err:       errors.New("invaluable data"),
@@ -54,7 +52,7 @@ func SingUp(user *auth.UserForRegister) *internal.HackError {
 func SingIn(user *auth.UserForLogin) (string, *internal.HackError) {
 	isExist, err := repository.ExistsUser(user.Login)
 	if err != nil {
-		log.Print(err)
+		internal.Tools.Logger.Print(err)
 		return "", &internal.HackError{
 			Code:      500,
 			Err:       err,
@@ -131,12 +129,12 @@ func SingUpBusiness(user *auth.BusinessUserForRegister) *internal.HackError {
 func GenerateToken(userId int64) (string, *internal.HackError) {
 	isLadLord, err := user.IsLandlord(userId)
 	if err != nil {
-		log.Print(err)
+		internal.Tools.Logger.Print(err)
 		return "", err
 	}
 	lvlAdmin, err := user.IsAdmin(userId)
 	if err != nil {
-		log.Print(err)
+		internal.Tools.Logger.Print(err)
 		return "", err
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &auth.TokenClaims{
@@ -151,7 +149,7 @@ func GenerateToken(userId int64) (string, *internal.HackError) {
 
 	tokenString, e := token.SignedString([]byte(singInKey))
 	if e != nil {
-		log.Fatal("FIX 110 line in repository")
+		internal.Tools.Logger.Fatal("FIX 110 line in repository")
 	}
 
 	return tokenString, nil
@@ -166,7 +164,7 @@ func ParseToken(accessToken string) (*internal.UserHeaders, *internal.HackError)
 		return []byte(singInKey), nil
 	})
 	if err != nil {
-		log.Print("invalid signing method")
+		internal.Tools.Logger.Print("invalid signing method")
 		return nil, &internal.HackError{
 			Code:      400,
 			Err:       errors.New("invalid signing method"),

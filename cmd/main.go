@@ -10,7 +10,6 @@ import (
 	"golang-pkg/internal/places/repository"
 	userHandlers "golang-pkg/internal/user/handlers"
 	"golang-pkg/pkg/db"
-	"golang-pkg/pkg/logger"
 	"log"
 	"os"
 )
@@ -25,7 +24,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	models.Tools.Logger = logger.NewServiceLogger(conf)
+	//models.Tools.Logger = logger.NewServiceLogger(conf)
+	models.Tools.Logger = log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
 	models.Tools.AdminLogger = log.New(os.Stdout, "ADMINLOG: ", log.LstdFlags)
 
 	models.Tools.Connection, err = db.InitPsqlDB(conf)

@@ -27,6 +27,7 @@ type Place struct {
 	RentersCount    int64          `json:"rentersCount"`
 	Meta            pq.StringArray `json:"meta"`
 	Rating          float64        `json:"rating"`
+	Approved        bool           `json:"approved"`
 }
 
 type Calendar struct {

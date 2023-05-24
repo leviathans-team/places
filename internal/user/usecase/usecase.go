@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"golang-pkg/internal"
 	userRepostiory "golang-pkg/internal/user/repository"
-	"log"
 	"time"
 )
 
@@ -42,7 +41,7 @@ func SetAdmin(adminId, userId int64) *internal.HackError {
 	}
 
 	if !isExist {
-		log.Print(errors.New("invalid user id"))
+		internal.Tools.Logger.Print(errors.New("invalid user id"))
 		return &internal.HackError{
 			Code:      400,
 			Err:       errors.New("invalid user id"),
@@ -56,7 +55,7 @@ func SetAdmin(adminId, userId int64) *internal.HackError {
 	}
 
 	if isExist {
-		log.Print(errors.New("user already admin"))
+		internal.Tools.Logger.Print(errors.New("user already admin"))
 		return &internal.HackError{
 			Code:      400,
 			Err:       errors.New("user already admin"),
@@ -78,7 +77,7 @@ func PromotionAdmin(adminId, userId int64) *internal.HackError {
 		return err
 	}
 	if !isExist {
-		log.Print(errors.New("invalid userId"))
+		internal.Tools.Logger.Print(errors.New("invalid userId"))
 		return &internal.HackError{
 			Code:      400,
 			Err:       errors.New("invalid userId"),
@@ -92,7 +91,7 @@ func PromotionAdmin(adminId, userId int64) *internal.HackError {
 		return err
 	}
 	if adminLevel == 3 {
-		log.Print(errors.New("admin have max level"))
+		internal.Tools.Logger.Print(errors.New("admin have max level"))
 		return &internal.HackError{
 			Code:      400,
 			Err:       errors.New("admin have max level"),
@@ -117,7 +116,7 @@ func UnSetAdmin(adminId, userId int64) *internal.HackError {
 		return err
 	}
 	if !isExist {
-		log.Print(errors.New("invalid userId"))
+		internal.Tools.Logger.Print(errors.New("invalid userId"))
 		return &internal.HackError{
 			Code:      400,
 			Err:       errors.New("invalid userId"),
@@ -141,7 +140,7 @@ func DeleteProfile(adminId, userId int64) *internal.HackError {
 		return err
 	}
 	if isAdmin {
-		log.Print(errors.New("attempt to delete the administrator account by the admin"))
+		internal.Tools.Logger.Print(errors.New("attempt to delete the administrator account by the admin"))
 		internal.Tools.AdminLogger.Printf("attempt to delete the administrator account by the admin (id: %d)", adminId)
 		return &internal.HackError{
 			Code:      401,
@@ -157,7 +156,7 @@ func DeleteProfile(adminId, userId int64) *internal.HackError {
 	}
 
 	if !isExist {
-		log.Print(errors.New("incorrect user id"))
+		internal.Tools.Logger.Print(errors.New("incorrect user id"))
 		return &internal.HackError{
 			Code:      401,
 			Err:       errors.New("incorrect user id"),

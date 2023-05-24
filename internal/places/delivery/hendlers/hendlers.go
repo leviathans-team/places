@@ -5,7 +5,6 @@ import (
 	models "golang-pkg/internal"
 	placeStruct "golang-pkg/internal/places"
 	"golang-pkg/internal/places/usecase"
-	"log"
 	"time"
 )
 
@@ -13,7 +12,7 @@ import (
 func GetAllFilters(ctx *fiber.Ctx) error {
 	body, err := usecase.GetFilters()
 	if err != nil {
-		log.Println(err)
+		models.Tools.Logger.Println(err)
 		ctx.Status(err.Code)
 		return ctx.JSON(err)
 	}
@@ -26,14 +25,14 @@ func CreateFilter(ctx *fiber.Ctx) error {
 	headers := ctx.GetRespHeaders()
 	isAdmin := headers["Isadmin"]
 	if err := ctx.BodyParser(&body); err != nil {
-		log.Println(err)
+		models.Tools.Logger.Println(err)
 		ctx.Status(400)
 		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
 	}
 
 	result, err := usecase.CreateFilter(body, isAdmin)
 	if err != nil {
-		log.Println(err)
+		models.Tools.Logger.Println(err)
 		ctx.Status(err.Code)
 		return ctx.JSON(err)
 	}
@@ -44,18 +43,18 @@ func CreateFilter(ctx *fiber.Ctx) error {
 func CreatePlace(ctx *fiber.Ctx) error {
 	headers := ctx.GetRespHeaders()
 	isLandLord := headers["Islandlord"]
-	userId := headers["userId"]
+	userId := headers["Userid"]
 	var body placeStruct.Place
 	err := ctx.BodyParser(&body)
 	if err != nil {
-		log.Println(err)
+		models.Tools.Logger.Println(err)
 		ctx.Status(400)
 		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
 	}
 
 	body, creationErr := usecase.CreatePlace(body, userId, isLandLord)
 	if creationErr != nil {
-		log.Println(err)
+		models.Tools.Logger.Println(err)
 		ctx.Status(creationErr.Code)
 		return ctx.JSON(creationErr)
 	}
@@ -74,7 +73,7 @@ func GetPlaces(ctx *fiber.Ctx) error {
 	body, repError := usecase.GetPlaces(filter, date, page)
 
 	if repError != nil {
-		log.Println(err)
+		models.Tools.Logger.Println(err)
 		ctx.Status(repError.Code)
 		return ctx.JSON(repError)
 	}
@@ -88,7 +87,7 @@ func GetOnePlace(ctx *fiber.Ctx) error {
 	placeId := ctx.Query("placeId")
 	body, repError := usecase.GetOnePlace(placeId)
 	if repError != nil {
-		log.Println(repError)
+		models.Tools.Logger.Println(repError)
 		ctx.Status(repError.Code)
 		return ctx.JSON(repError)
 	}
@@ -106,7 +105,7 @@ func DeletePlace(ctx *fiber.Ctx) error {
 
 	repErr := usecase.DeletePlace(key, isAdmin, isLandLord)
 	if repErr != nil {
-		log.Println(repErr)
+		models.Tools.Logger.Println(repErr)
 		ctx.Status(repErr.Code)
 		return ctx.JSON(repErr)
 	}
@@ -121,7 +120,7 @@ func DeleteFilter(ctx *fiber.Ctx) error {
 
 	repErr := usecase.DeleteFilter(filterid, isAdmin)
 	if repErr != nil {
-		log.Println(repErr)
+		models.Tools.Logger.Println(repErr)
 		ctx.Status(repErr.Code)
 		return ctx.JSON(repErr)
 	}
@@ -135,7 +134,7 @@ func CancelOrder(ctx *fiber.Ctx) error {
 	userId := headers["Userid"]
 	repErr := usecase.CancelOrder(key, userId)
 	if repErr != nil {
-		log.Println(repErr)
+		models.Tools.Logger.Println(repErr)
 		ctx.Status(repErr.Code)
 		return ctx.JSON(repErr)
 	}
@@ -147,13 +146,13 @@ func CreateOrder(ctx *fiber.Ctx) error {
 	var result []placeStruct.Calendar
 	err := ctx.BodyParser(&body)
 	if err != nil {
-		log.Println(err)
+		models.Tools.Logger.Println(err)
 		ctx.Status(400)
 		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
 	}
 	result, creationErr := usecase.CreateOrder(body)
 	if creationErr != nil {
-		log.Println(creationErr)
+		models.Tools.Logger.Println(creationErr)
 		ctx.Status(creationErr.Code)
 		return ctx.JSON(creationErr)
 	}
@@ -164,13 +163,13 @@ func UpdatePlace(ctx *fiber.Ctx) error {
 	var body placeStruct.Place
 	err := ctx.BodyParser(&body)
 	if err != nil {
-		log.Println(err)
+		models.Tools.Logger.Println(err)
 		ctx.Status(400)
 		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
 	}
 	updateErr := usecase.UpdatePlace(body)
 	if updateErr != nil {
-		log.Println(updateErr)
+		models.Tools.Logger.Println(updateErr)
 		ctx.Status(updateErr.Code)
 		return ctx.JSON(updateErr)
 	}
@@ -183,7 +182,7 @@ func SearchPlace(ctx *fiber.Ctx) error {
 
 	result, searchErr := usecase.SearchPlace(key)
 	if searchErr != nil {
-		log.Println(searchErr)
+		models.Tools.Logger.Println(searchErr)
 		ctx.Status(searchErr.Code)
 		return ctx.JSON(searchErr)
 	}
@@ -197,7 +196,7 @@ func GetMyPlaces(ctx *fiber.Ctx) error {
 	isLandLord := headers["Islandlord"]
 	body, repErr := usecase.GetMyPlace(userId, isLandLord)
 	if repErr != nil {
-		log.Println(repErr)
+		models.Tools.Logger.Println(repErr)
 		ctx.Status(repErr.Code)
 		return ctx.JSON(repErr)
 	}
@@ -210,7 +209,7 @@ func GetMyOrders(ctx *fiber.Ctx) error {
 	userId := headers["Userid"]
 	body, repErr := usecase.GetMyOrders(userId)
 	if repErr != nil {
-		log.Println(repErr)
+		models.Tools.Logger.Println(repErr)
 		ctx.Status(repErr.Code)
 		return ctx.JSON(repErr)
 	}
@@ -225,14 +224,14 @@ func CreateComment(ctx *fiber.Ctx) error {
 	var body placeStruct.CommentMessage
 	err := ctx.BodyParser(&body)
 	if err != nil {
-		log.Println(err)
+		models.Tools.Logger.Println(err)
 		ctx.Status(400)
 		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
 	}
 
 	result, repErr := usecase.CreateComment(userId, place, body)
 	if repErr != nil {
-		log.Println(repErr)
+		models.Tools.Logger.Println(repErr)
 		ctx.Status(repErr.Code)
 		return ctx.JSON(repErr)
 	}
@@ -243,7 +242,7 @@ func GetComment(ctx *fiber.Ctx) error {
 	place := ctx.Query("placeId")
 	result, repErr := usecase.GetComment(place)
 	if repErr != nil {
-		log.Println(repErr)
+		models.Tools.Logger.Println(repErr)
 		ctx.Status(repErr.Code)
 		return ctx.JSON(repErr)
 	}
@@ -269,7 +268,7 @@ func MakeApproved(ctx *fiber.Ctx) error {
 	err := ctx.BodyParser(&body)
 	placeId := body.PlaceId
 	if err != nil {
-		log.Println(err)
+		models.Tools.Logger.Println(err)
 		ctx.Status(400)
 		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
 	}
@@ -286,7 +285,7 @@ func CreateLike(ctx *fiber.Ctx) error {
 	userId := ctx.Query("userId")
 	createErr := usecase.CreateLike(placeId, userId)
 	if createErr != nil {
-		log.Println(createErr)
+		models.Tools.Logger.Println(createErr)
 		ctx.Status(createErr.Code)
 		return ctx.JSON(createErr)
 	}
@@ -297,7 +296,7 @@ func GetPlaceLikeCount(ctx *fiber.Ctx) error {
 	placeId := ctx.Query("placeId")
 	result, getErr := usecase.GetPlaceLikeCount(placeId)
 	if getErr != nil {
-		log.Println(getErr)
+		models.Tools.Logger.Println(getErr)
 		ctx.Status(getErr.Code)
 		return ctx.JSON(getErr)
 	}
@@ -309,7 +308,7 @@ func IsLiked(ctx *fiber.Ctx) error {
 	userId := ctx.Query("userId")
 	result, getErr := usecase.IsLiked(placeId, userId)
 	if getErr != nil {
-		log.Println(getErr)
+		models.Tools.Logger.Println(getErr)
 		ctx.Status(getErr.Code)
 		return ctx.JSON(getErr)
 	}

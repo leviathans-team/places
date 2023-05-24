@@ -2,7 +2,6 @@ package internal
 
 import (
 	"github.com/jmoiron/sqlx"
-	"golang-pkg/pkg/logger"
 	"log"
 	"time"
 )
@@ -10,8 +9,10 @@ import (
 var Tools tools
 
 type tools struct {
-	Connection  *sqlx.DB
-	Logger      *logger.ServiceLogger
+	Connection *sqlx.DB
+	//Logger      *logger.ServiceLogger
+	Logger *log.Logger
+
 	AdminLogger *log.Logger
 }
 
