@@ -7,7 +7,7 @@ import (
 )
 
 func Hearing(app *fiber.App) {
-	myGroup := app.Group("/place", middleware.UserIdentification)
+	myGroup := app.Group("/place")
 	//myGroup := app.Group("/place")
 	myGroup.Get("/chooseFilter", hendlers.GetAllFilters, middleware.UserIsExist)
 	myGroup.Get("", hendlers.GetPlaces)
@@ -30,5 +30,5 @@ func Hearing(app *fiber.App) {
 	myGroup.Get("/isLiked", hendlers.IsLiked, middleware.UserIsExist)
 
 	app.Get("/adminPlaces/placeForApproving", hendlers.GetNotApprovedPlace, middleware.UserIdentification, middleware.AdminIsExist)
-	app.Get("/adminPlaces/placeForApproving/approve", hendlers.MakeApproved, middleware.UserIdentification, middleware.AdminIsExist)
+	app.Put("/adminPlaces/placeForApproving/approve", hendlers.MakeApproved, middleware.UserIdentification, middleware.AdminIsExist)
 }

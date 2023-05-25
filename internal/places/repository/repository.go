@@ -9,9 +9,10 @@ import (
 
 func CreateFilter(body placeStruct.Filter) ([]placeStruct.Filter, *internal.HackError) {
 	var filterId int64
+
 	err := internal.Tools.Connection.QueryRowx(`INSERT INTO filters
 	(filterName)
-	VALUES ($1)`, body.FilterName).Scan(&filterId)
+	VALUES ($1) returning filterId`, body.FilterName).Scan(&filterId)
 	if err != nil {
 		internal.Tools.Logger.Println(err)
 		return []placeStruct.Filter{}, &internal.HackError{
@@ -24,8 +25,21 @@ func CreateFilter(body placeStruct.Filter) ([]placeStruct.Filter, *internal.Hack
 }
 
 func GetAllFilters() ([]placeStruct.Filter, *internal.HackError) {
+	var tmp placeStruct.Filter
 	var result []placeStruct.Filter
-	err := internal.Tools.Connection.Get(&result, `SELECT * FROM filters`)
+	rows, err := internal.Tools.Connection.Queryx(`SELECT * FROM filters`)
+	for rows.Next() {
+		if err = rows.StructScan(&tmp); err != nil {
+			internal.Tools.Logger.Println(err)
+			return []placeStruct.Filter{}, &internal.HackError{
+				Code:      500,
+				Err:       err,
+				Timestamp: time.Now(),
+			}
+		}
+		result = append(result, tmp)
+	}
+	internal.Tools.Logger.Println(result)
 	if err != nil {
 		internal.Tools.Logger.Println(err)
 		return []placeStruct.Filter{}, &internal.HackError{

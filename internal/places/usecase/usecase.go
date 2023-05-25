@@ -22,9 +22,9 @@ func CreateFilter(body placeStruct.Filter, isAdmin string) ([]placeStruct.Filter
 }
 
 func CreatePlace(body placeStruct.Place, user, isLandLord string) (placeStruct.Place, *internal.HackError) {
-	if isLandLord == "false" {
-		return placeStruct.Place{}, &internal.HackError{Code: 400, Err: errors.New("you must be landlord"), Timestamp: time.Now()}
-	}
+	//if isLandLord == "false" {
+	//	return placeStruct.Place{}, &internal.HackError{Code: 400, Err: errors.New("you must be landlord"), Timestamp: time.Now()}
+	//}
 
 	userID, err := strconv.ParseInt(user, 10, 64)
 	if err != nil {
