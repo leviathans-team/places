@@ -2,7 +2,7 @@ package internal
 
 import (
 	"github.com/jmoiron/sqlx"
-	"golang-pkg/pkg/logger"
+	"log"
 	"time"
 )
 
@@ -10,7 +10,10 @@ var Tools tools
 
 type tools struct {
 	Connection *sqlx.DB
-	Logger     *logger.ServiceLogger
+	//Logger      *logger.ServiceLogger
+	Logger *log.Logger
+
+	AdminLogger *log.Logger
 }
 
 type User struct {
@@ -31,12 +34,18 @@ type HackError struct {
 	Timestamp time.Time
 }
 
-type IAdmin interface {
-	ConfirmPlace(placeId int) (int, error)
-	DeletePlace(placeId int) error
+type UserHeaders struct {
+	UserId     int64 `json:"userId"`
+	IsLandLord bool  `json:"isLandLord"`
+	AdminLevel int64 `json:"isAdmin"`
 }
 
-type IUser interface {
-	CreatePlace() (int, error)
-	RentPlace(placeId int) error
-}
+//type IAdmin interface {
+//	ConfirmPlace(placeId int) (int, error)
+//	DeletePlace(placeId int) error
+//}
+//
+//type IUser interface {
+//	CreatePlace() (int, error)
+//	RentPlace(placeId int) error
+//}

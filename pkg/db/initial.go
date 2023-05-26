@@ -5,8 +5,6 @@ import (
 	_ "github.com/jackc/pgx/stdlib" // pgx driver
 	"github.com/jmoiron/sqlx"
 	"golang-pkg/config"
-	"gopkg.in/mgo.v2"
-	"log"
 )
 
 func InitPsqlDB(c *config.Config) (*sqlx.DB, error) {
@@ -22,12 +20,4 @@ func InitPsqlDB(c *config.Config) (*sqlx.DB, error) {
 		return nil, err
 	}
 	return database, nil
-}
-
-func InitMongoDb(host string) *mgo.Session {
-	session, err := mgo.Dial(fmt.Sprintf("mongodb://%s", host))
-	if err != nil {
-		log.Println(err)
-	}
-	return session
 }
