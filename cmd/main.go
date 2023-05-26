@@ -60,7 +60,7 @@ func main() {
 	app.Get("/swagger/*", swagger.HandlerDefault)
 	handlers.SetupRoutesForAuth(app)
 	userHandlers.UserPanel(app)
-	delivery.Hearing(app) // создай группу для сових ручек, в будующем будет проще поддерживать/фиксить/строить код
+	delivery.Hearing(app)
 
 	repository.InitPlaceTables()
 	err = app.Listen(":3000")

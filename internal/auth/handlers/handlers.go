@@ -18,7 +18,8 @@ func SetupRoutesForAuth(app *fiber.App) {
 
 	o2auth := api.Group("/o2auth")
 	o2auth.Post("vk", loginWithVK)
-	o2auth.Post("ok", loginWithOK)
+	o2auth.Post("Tinkoff", loginWithTinkoff)
+	o2auth.Post("Sber", loginWithSber)
 	o2auth.Post("gos", loginWithGos)
 
 	//test := app.Group("/test", middleware.UserIdentification)
@@ -27,6 +28,17 @@ func SetupRoutesForAuth(app *fiber.App) {
 
 }
 
+// @Summary Авторизация
+// @Tags auth
+// @Description Авторизировать пользователя
+// @ID login
+// @Params input body auth.UserForLogin true "login/email and password"
+// @Produce  json
+// @Success 200 {object} string
+// @Failure 400 {object} internal.HackError
+// @Failure 500 {object} internal.HackError
+// @Router /user/login [post]
+// Возвращаю jwt-token, который храним в себе данные об авторизации
 func login(ctx *fiber.Ctx) error {
 	user := new(auth.UserForLogin)
 
@@ -54,6 +66,17 @@ func login(ctx *fiber.Ctx) error {
 	return ctx.JSON(token)
 }
 
+// @Summary Регистрация
+// @Tags auth
+// @Description Регистрация пользователя
+// @ID register
+// @Params input body auth.UserForRegister true "Имя, фамилия, отчетсво, почта, телефон, пароль"
+// @Produce  json
+// @Success 200 {object} auth.UserForRegister
+// @Failure 400 {object} internal.HackError
+// @Failure 500 {object} internal.HackError
+// @Router /user/register [post]
+// Возвращаю в случае успеха данные, введеные при регистрации
 func register(c *fiber.Ctx) error {
 	user := new(auth.UserForRegister)
 	if err := c.BodyParser(user); err != nil {
@@ -81,6 +104,17 @@ func register(c *fiber.Ctx) error {
 	return c.JSON(*user)
 }
 
+// @Summary Регистрация арендодателя
+// @Tags auth
+// @Description Регистрация пользователя
+// @ID landlordRegister
+// @Params input body auth.BusinessUserForRegister true "Имя, фамилия, отчетсво, почта, телефон, пароль, должность,  имя юр лица, ИНН"
+// @Produce  json
+// @Success 200 {object} auth.BusinessUserForRegister
+// @Failure 400 {object} internal.HackError
+// @Failure 500 {object} internal.HackError
+// @Router /user/businessRegister [post]
+// Возвращаю в случае успеха данные, введеные при регистрации
 func landlordRegister(ctx *fiber.Ctx) error {
 	user := new(auth.BusinessUserForRegister)
 	if err := ctx.BodyParser(user); err != nil {
@@ -106,17 +140,50 @@ func landlordRegister(ctx *fiber.Ctx) error {
 	return ctx.JSON(*user)
 }
 
+// @Summary Вход через госуслуги
+// @Tags auth
+// @Description Регистрация пользователя -> Заглушка
+// @ID loginWithGos
+// @Failure 404 {object} error
+// @Router /user/o2auth/gos [post]
+// Заглушка
 func loginWithGos(ctx *fiber.Ctx) error {
 	ctx.Status(404)
 	return errors.New("in progress")
 }
 
-func loginWithOK(ctx *fiber.Ctx) error {
+// @Summary Вход через Sber
+// @Tags auth
+// @Description Регистрация пользователя -> Заглушка
+// @ID loginWithSber
+// @Failure 404 {object} error
+// @Router /user/o2auth/Sber [post]
+// Заглушка
+func loginWithSber(ctx *fiber.Ctx) error {
 	ctx.Status(404)
 	return errors.New("in progress")
 }
 
+// @Summary Вход через VK
+// @Tags auth
+// @Description Регистрация пользователя -> Заглушка
+// @ID loginWithVK
+// @Failure 404 {object} error
+// @Router /user/o2auth/svk [post]
+// Заглушка
 func loginWithVK(ctx *fiber.Ctx) error {
+	ctx.Status(404)
+	return errors.New("in progress")
+}
+
+// @Summary Вход через Tinkoff
+// @Tags auth
+// @Description Регистрация пользователя -> Заглушка
+// @ID loginWithTinkoff
+// @Failure 404 {object} error
+// @Router /user/o2auth/Tinkoff [post]
+// Заглушка
+func loginWithTinkoff(ctx *fiber.Ctx) error {
 	ctx.Status(404)
 	return errors.New("in progress")
 }
