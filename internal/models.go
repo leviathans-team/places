@@ -9,10 +9,8 @@ import (
 var Tools tools
 
 type tools struct {
-	Connection *sqlx.DB
-	//Logger      *logger.ServiceLogger
-	Logger *log.Logger
-
+	Connection  *sqlx.DB
+	Logger      *log.Logger
 	AdminLogger *log.Logger
 }
 
@@ -39,13 +37,3 @@ type UserHeaders struct {
 	IsLandLord bool  `json:"isLandLord"`
 	AdminLevel int64 `json:"isAdmin"`
 }
-
-//type IAdmin interface {
-//	ConfirmPlace(placeId int) (int, error)
-//	DeletePlace(placeId int) error
-//}
-//
-//type IUser interface {
-//	CreatePlace() (int, error)
-//	RentPlace(placeId int) error
-//}
