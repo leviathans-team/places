@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	_ "github.com/jackc/pgx/stdlib" // pgx driver
 	"github.com/jmoiron/sqlx"
 	"golang-pkg/config"
 )
