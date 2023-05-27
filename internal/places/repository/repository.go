@@ -355,6 +355,67 @@ func InitPlaceTables() *internal.HackError {
 		}
 	}
 
+	_, err = internal.Tools.Connection.Exec(`CREATE TABLE IF NOT EXISTS  users_info (
+    user_id       bigserial not null primary key,
+    name       text      not null,
+    surname    text      not null,
+    patronymic text,
+    email      text,
+    phone text
+
+);`)
+	if err != nil {
+		internal.Tools.Logger.Println(err)
+		return &internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
+
+	_, err = internal.Tools.Connection.Exec(`CREATE TABLE IF NOT EXISTS  users_login (
+                             login_id bigint references users_info(user_id) primary key,
+                             password_hash text
+);`)
+	if err != nil {
+		internal.Tools.Logger.Println(err)
+		return &internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
+
+	_, err = internal.Tools.Connection.Exec(`CREATE TABLE IF NOT EXISTS  admins (
+                        user_id bigint references users_info(user_id) primary key not null,
+                        admin_level int
+);`)
+	if err != nil {
+		internal.Tools.Logger.Println(err)
+		return &internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
+
+	_, err = internal.Tools.Connection.Exec(`CREATE TABLE IF NOT EXISTS  landlords (
+                           user_id bigint references users_info(user_id) primary key,
+                           post text not null,
+                           places bigint[],
+                           legal_entity text not null,
+                           inn text not null,
+                           industry int
+);`)
+	if err != nil {
+		internal.Tools.Logger.Println(err)
+		return &internal.HackError{
+			Code:      500,
+			Err:       err,
+			Timestamp: time.Now(),
+		}
+	}
+
 	return nil
 }
 
