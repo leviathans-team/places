@@ -1,0 +1,1889 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Документация API",
+        "title": "Hack",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "127.0.0.1:3000",
+    "basePath": "/",
+    "paths": {
+        "/": {
+            "get": {
+                "description": "Получение всех мест и отображение их на странице",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "text/html"
+                ],
+                "tags": [
+                    "places"
+                ],
+                "summary": "Получение всех мест",
+                "operationId": "GetPlaces",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID фильтра",
+                        "name": "Filterid",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Дата бронирования",
+                        "name": "Date",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Страница для пагинации",
+                        "name": "Page",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/golang-pkg_internal_places.Place"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/deleteAdminProfile/id/:userId": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Удаление аккаунта не админиистратора",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Удаление аккаунта администратора",
+                "operationId": "deleteAdminProfile",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/deleteProfile/id/:userId": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Удаление аккаунта не админиистратора",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Удаление аккаунта",
+                "operationId": "deleteProfile",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/promotionAdmin/id/:userId": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Повышение уровня администратора",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Повышение уровня администратора",
+                "operationId": "promotionAdmin",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/setAdmin/id/:userId": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Авторизировать пользователя",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Назначение администратора",
+                "operationId": "setAdmin",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/usSetAdmin/id/:userId": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Снятие с поста администратора",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Снятие с поста администратора",
+                "operationId": "unSetAdmin",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    }
+                }
+            }
+        },
+        "/adminPlaces/placeForApproving": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Получить не подтверждённые места",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Получить не подтверждённые места",
+                "operationId": "GetNotApprovedPlace",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Является админом(true/false)",
+                        "name": "Isadmin",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/golang-pkg_internal_places.Place"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Подтвердить место",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Подтвердить место",
+                "operationId": "MakeApproved",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Является админом(true/false)",
+                        "name": "Isadmin",
+                        "in": "header"
+                    },
+                    {
+                        "description": "Подтверждение места",
+                        "name": "Place",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/golang-pkg_internal_places.Approving"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/golang-pkg_internal_places.Place"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/myOrders": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "возвращение всех бронирований пользователя",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ownner"
+                ],
+                "summary": "Вывод свох бронирований",
+                "operationId": "GetMyOrders",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID пользователя",
+                        "name": "Userid",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/golang-pkg_internal_places.Calendar"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/place/chooseFilter": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Получить полных список фильтров",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "places"
+                ],
+                "summary": "Получить полных список фильтров",
+                "operationId": "GetAllFilters",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/golang-pkg_internal_places.Filter"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    }
+                }
+            }
+        },
+        "/place/createFilter": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Создание нового фильтра и возврат обновленного списка фильтров",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "places"
+                ],
+                "summary": "Создание нового фильтра",
+                "operationId": "CreateFilter",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Является админом(true/false)",
+                        "name": "Isadmin",
+                        "in": "header"
+                    },
+                    {
+                        "description": "Json для создания фильтра",
+                        "name": "Filter",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/golang-pkg_internal_places.Filter"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/golang-pkg_internal_places.Filter"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/place/createOrder": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Создание бронирования и получение списка заказов у конкретного места",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "places"
+                ],
+                "summary": "Создание бронирования",
+                "operationId": "CreateOrder",
+                "parameters": [
+                    {
+                        "description": "Json для создания брони",
+                        "name": "Order",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/golang-pkg_internal_places.Filter"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/golang-pkg_internal_places.Calendar"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/place/createPlace": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Создание нового места и возврат этого места",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "places"
+                ],
+                "summary": "Создание нового места",
+                "operationId": "CreatePlace",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Является лэндлордом(true/false)",
+                        "name": "Islandlord",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID пользователя",
+                        "name": "Userid",
+                        "in": "header"
+                    },
+                    {
+                        "description": "Json для создания места",
+                        "name": "Place",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/golang-pkg_internal_places.Place"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/golang-pkg_internal_places.Place"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/place/curent": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "получение конкретного места по id",
+                "produces": [
+                    "text/html"
+                ],
+                "tags": [
+                    "places"
+                ],
+                "summary": "Получение конкретного места",
+                "operationId": "GetOnePlace",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID места",
+                        "name": "placeId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/golang-pkg_internal_places.Place"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/place/curent/comments": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Получить оценку",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "places"
+                ],
+                "summary": "Посмотреть оценки",
+                "operationId": "GetComment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID места",
+                        "name": "placeId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/golang-pkg_internal_places.Comment"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/place/curent/comments/createComment": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Оставить комментарий и поставить оценку",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "places"
+                ],
+                "summary": "Оставить отзыв",
+                "operationId": "CreateComment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID места",
+                        "name": "placeId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID пользователя",
+                        "name": "Userid",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "ID пользователя",
+                        "name": "Comment",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/golang-pkg_internal_places.CommentMessage"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/golang-pkg_internal_places.Comment"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/place/delFilter": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "удаление фильтра по ID. Доступно только админам",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "places"
+                ],
+                "summary": "Удаление фильтра",
+                "operationId": "DeleteFilter",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID фильтра",
+                        "name": "filterId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Является админом(true/false)",
+                        "name": "Isadmin",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/place/delPlace": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "удаление места. Доступно лендлордам и админам",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "places"
+                ],
+                "summary": "Удаление конкретного места",
+                "operationId": "DeletePlace",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID места",
+                        "name": "placeId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Является лэндлордом(true/false)",
+                        "name": "Islandlord",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Является админом(true/false)",
+                        "name": "Isadmin",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/place/myOrders/cancelOrder": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "отмена бронирования пользователем по orderId и Userid",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "places"
+                ],
+                "summary": "Отмена бронирования пользователем",
+                "operationId": "CancelOrder",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID фильтра",
+                        "name": "orderId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID пользователя",
+                        "name": "Userid",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/place/myPlace": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "вывод собственных мест для лендлорда",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ownner"
+                ],
+                "summary": "Вывод свох мест",
+                "operationId": "GetMyPlaces",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID пользователя",
+                        "name": "Userid",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Является лэндлордом(true/false)",
+                        "name": "Islandlord",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/golang-pkg_internal_places.LandPlace"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/place/searchPlace": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Поиск мест по его названию",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "places"
+                ],
+                "summary": "Поиск мест",
+                "operationId": "SearchPlace",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Название места",
+                        "name": "placeName",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/golang-pkg_internal_places.Place"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/place/updatePlace": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Обновление параметров места",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "places"
+                ],
+                "summary": "Обновление параметров места",
+                "operationId": "UpdatePlace",
+                "parameters": [
+                    {
+                        "description": "Json для обновления места",
+                        "name": "Order",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/golang-pkg_internal_places.Place"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/places/getPlaceLikesCount": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Добавить место в избранное",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "places"
+                ],
+                "summary": "Получить количество лайков у места",
+                "operationId": "GetPlaceLikeCount",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID места",
+                        "name": "placeId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "int"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/places/isLiked": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Проверить лайкнуто или нете",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "places"
+                ],
+                "summary": "Проверить лайкнуто или нет",
+                "operationId": "IsLiked",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID места",
+                        "name": "placeId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID пользоватя",
+                        "name": "userId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/places/like": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Добавить место в избранное",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "places"
+                ],
+                "summary": "Добавить место в избранное",
+                "operationId": "CreateLike",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID места",
+                        "name": "placeId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID пользователя",
+                        "name": "userId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/businessRegister": {
+            "post": {
+                "description": "Регистрация пользователя",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Регистрация арендодателя",
+                "operationId": "landlordRegister",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/golang-pkg_internal_auth.BusinessUserForRegister"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/login": {
+            "post": {
+                "description": "Авторизировать пользователя",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Авторизация",
+                "operationId": "login",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/o2auth/Sber": {
+            "post": {
+                "description": "Регистрация пользователя -\u003e Заглушка",
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Вход через Sber",
+                "operationId": "loginWithSber",
+                "responses": {
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/user/o2auth/Tinkoff": {
+            "post": {
+                "description": "Регистрация пользователя -\u003e Заглушка",
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Вход через Tinkoff",
+                "operationId": "loginWithTinkoff",
+                "responses": {
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/user/o2auth/gos": {
+            "post": {
+                "description": "Регистрация пользователя -\u003e Заглушка",
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Вход через госуслуги",
+                "operationId": "loginWithGos",
+                "responses": {
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/user/o2auth/svk": {
+            "post": {
+                "description": "Регистрация пользователя -\u003e Заглушка",
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Вход через VK",
+                "operationId": "loginWithVK",
+                "responses": {
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/user/register": {
+            "post": {
+                "description": "Регистрация пользователя",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Регистрация",
+                "operationId": "register",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/golang-pkg_internal_auth.UserForRegister"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "golang-pkg_internal_auth.BusinessUserForRegister": {
+            "type": "object",
+            "required": [
+                "email",
+                "inn",
+                "legalEntity",
+                "name",
+                "password",
+                "phone",
+                "post",
+                "surname"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "inn": {
+                    "type": "string"
+                },
+                "legalEntity": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "patronymic": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "post": {
+                    "type": "string"
+                },
+                "surname": {
+                    "type": "string"
+                }
+            }
+        },
+        "golang-pkg_internal_auth.UserForRegister": {
+            "type": "object",
+            "required": [
+                "email",
+                "name",
+                "password",
+                "phone",
+                "surname"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "patronymic": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "surname": {
+                    "type": "string"
+                }
+            }
+        },
+        "golang-pkg_internal_places.Approving": {
+            "type": "object",
+            "properties": {
+                "adminId": {
+                    "type": "integer"
+                },
+                "placeId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "golang-pkg_internal_places.Calendar": {
+            "type": "object",
+            "properties": {
+                "bookId": {
+                    "type": "integer"
+                },
+                "placeId": {
+                    "type": "integer"
+                },
+                "timeFrom": {
+                    "type": "string"
+                },
+                "timeTo": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "golang-pkg_internal_places.Comment": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "commentId": {
+                    "type": "integer"
+                },
+                "mark": {
+                    "type": "number"
+                },
+                "placeId": {
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "golang-pkg_internal_places.CommentMessage": {
+            "type": "object",
+            "properties": {
+                "mark": {
+                    "type": "number"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "golang-pkg_internal_places.Filter": {
+            "type": "object",
+            "properties": {
+                "filterId": {
+                    "type": "integer"
+                },
+                "filterName": {
+                    "type": "string"
+                }
+            }
+        },
+        "golang-pkg_internal_places.LandPlace": {
+            "type": "object",
+            "properties": {
+                "approved": {
+                    "type": "boolean"
+                },
+                "bookId": {
+                    "type": "integer"
+                },
+                "commonObjects": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "equipment": {
+                    "type": "string"
+                },
+                "filterId": {
+                    "type": "integer"
+                },
+                "meta": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "placeAddress": {
+                    "type": "string"
+                },
+                "placeId": {
+                    "type": "integer"
+                },
+                "placeName": {
+                    "type": "string"
+                },
+                "placeServices": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "number"
+                },
+                "rentersCount": {
+                    "type": "integer"
+                },
+                "site": {
+                    "type": "string"
+                },
+                "telephoneNumber": {
+                    "type": "string"
+                },
+                "timeFrom": {
+                    "type": "string"
+                },
+                "timeTo": {
+                    "type": "string"
+                },
+                "totalSquare": {
+                    "type": "number"
+                },
+                "userId": {
+                    "type": "integer"
+                },
+                "workingSquare": {
+                    "type": "number"
+                },
+                "workingTime": {
+                    "type": "string"
+                }
+            }
+        },
+        "golang-pkg_internal_places.Place": {
+            "type": "object",
+            "properties": {
+                "approved": {
+                    "type": "boolean"
+                },
+                "commonObjects": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "equipment": {
+                    "type": "string"
+                },
+                "filterId": {
+                    "type": "integer"
+                },
+                "meta": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "placeAddress": {
+                    "type": "string"
+                },
+                "placeId": {
+                    "type": "integer"
+                },
+                "placeName": {
+                    "type": "string"
+                },
+                "placeServices": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "number"
+                },
+                "rentersCount": {
+                    "type": "integer"
+                },
+                "site": {
+                    "type": "string"
+                },
+                "telephoneNumber": {
+                    "type": "string"
+                },
+                "totalSquare": {
+                    "type": "number"
+                },
+                "workingSquare": {
+                    "type": "number"
+                },
+                "workingTime": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal.HackError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "err": {},
+                "message": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}
