@@ -19,7 +19,7 @@ import (
 // @title Hack
 // @version 1.0
 // @description Документация API
-// @host 127.0.0.1:3000
+// @host 37.18.110.184:3000
 // @BasePath /
 
 // @securityDefinitions.apikey ApiKeyAuth

@@ -194,7 +194,7 @@ definitions:
       timestamp:
         type: string
     type: object
-host: 127.0.0.1:3000
+host: 37.18.110.184:3000
 info:
   contact: {}
   description: Документация API
