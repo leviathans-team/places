@@ -17,6 +17,17 @@ const (
 	authorizationHeader = "Authorization"
 )
 
+// UserIdentification
+// @Summary Проверка токена
+// @Tags auth
+// @Description На вход получаю токен в хедере Authorization
+// @ID UserIdentification
+// @Param        Authorization   header      string  true  "bearer token"
+// @Produce  json
+// @Success 200 {object} string
+// @Failure 500 {object} internal.HackError
+// @Router /getUserInfo [get]
+// Возвращаю jwt-token, который храним в себе данные об авторизации
 func UserIdentification(ctx *fiber.Ctx) error {
 	//header := ctx.GetRespHeader(authorizationHeader)
 	header := ctx.Get(authorizationHeader)

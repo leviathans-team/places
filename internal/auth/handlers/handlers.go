@@ -11,6 +11,7 @@ import (
 )
 
 func SetupRoutesForAuth(app *fiber.App) {
+	app.Get("getUserInfo", middleware.UserIdentification)
 	api := app.Group("/user")
 	api.Post("/login", login)
 	api.Post("/register", register)
@@ -32,7 +33,7 @@ func SetupRoutesForAuth(app *fiber.App) {
 // @Tags auth
 // @Description Авторизировать пользователя
 // @ID login
-// @Params input body auth.UserForLogin true "login/email and password"
+// @Param        loginDate   body    auth.UserForLogin{}    true  "Данные для входа"
 // @Produce  json
 // @Success 200 {object} string
 // @Failure 400 {object} internal.HackError

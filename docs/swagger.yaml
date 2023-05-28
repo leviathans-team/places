@@ -30,6 +30,16 @@ definitions:
     - post
     - surname
     type: object
+  golang-pkg_internal_auth.UserForLogin:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    required:
+    - login
+    - password
+    type: object
   golang-pkg_internal_auth.UserForRegister:
     properties:
       email:
@@ -450,6 +460,30 @@ paths:
       summary: Подтвердить место
       tags:
       - Admin
+  /getUserInfo:
+    get:
+      description: На вход получаю токен в хедере Authorization
+      operationId: UserIdentification
+      parameters:
+      - description: bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal.HackError'
+      summary: Проверка токена
+      tags:
+      - auth
   /myOrders:
     get:
       description: возвращение всех бронирований пользователя
@@ -1136,6 +1170,13 @@ paths:
     post:
       description: Авторизировать пользователя
       operationId: login
+      parameters:
+      - description: Данные для входа
+        in: body
+        name: loginDate
+        required: true
+        schema:
+          $ref: '#/definitions/golang-pkg_internal_auth.UserForLogin'
       produces:
       - application/json
       responses:

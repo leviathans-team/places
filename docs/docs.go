@@ -405,6 +405,42 @@ const docTemplate = `{
                 }
             }
         },
+        "/getUserInfo": {
+            "get": {
+                "description": "На вход получаю токен в хедере Authorization",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Проверка токена",
+                "operationId": "UserIdentification",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    }
+                }
+            }
+        },
         "/myOrders": {
             "get": {
                 "security": [
@@ -1474,6 +1510,17 @@ const docTemplate = `{
                 ],
                 "summary": "Авторизация",
                 "operationId": "login",
+                "parameters": [
+                    {
+                        "description": "Данные для входа",
+                        "name": "loginDate",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/golang-pkg_internal_auth.UserForLogin"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1633,6 +1680,21 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "surname": {
+                    "type": "string"
+                }
+            }
+        },
+        "golang-pkg_internal_auth.UserForLogin": {
+            "type": "object",
+            "required": [
+                "login",
+                "password"
+            ],
+            "properties": {
+                "login": {
+                    "type": "string"
+                },
+                "password": {
                     "type": "string"
                 }
             }
