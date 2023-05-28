@@ -25,9 +25,9 @@ func UserPanel(app *fiber.App) {
 // @Security ApiKeyAuth
 // @Description Авторизировать пользователя
 // @ID setAdmin
-// @Params input header userId true "ИД администратора"
-// @Params input header adminLevel true "Уровень администратора"
-// @Params input path userid true "Ид пользователя, которого назначают администратором"
+// @Param userId header string true "ИД администратора"
+// @Param adminLevel header int true "Уровень администратора, где 0-не админ, 1 - админ младщего звена, 3 - старший админ"
+// @Param userid path int true "Ид пользователя, которого назначают администратором"
 // @Produce  json
 // @Success 200 {object} nil
 // @Failure 400 {object} internal.HackError
@@ -82,9 +82,9 @@ func setAdmin(ctx *fiber.Ctx) error {
 // @Security ApiKeyAuth
 // @Description Снятие с поста администратора
 // @ID unSetAdmin
-// @Params input header userId true "ИД администратора"
-// @Params input header adminLevel true "Уровень администратора"
-// @Params input path userid true "Ид пользователя, которого снимают с поста администратора"
+// @Param userId header string true "ИД администратора"
+// @Param adminLevel header int true "Уровень администратора, где 0-не админ, 1 - админ младщего звена, 3 - старший админ"
+// @Param userid path int true "Ид пользователя, которого назначают администратором"
 // @Produce  json
 // @Success 200 {object} nil
 // @Failure 400 {object} internal.HackError
@@ -140,9 +140,9 @@ func unSetAdmin(ctx *fiber.Ctx) error {
 // @Security ApiKeyAuth
 // @Description Удаление аккаунта не админиистратора
 // @ID deleteProfile
-// @Params input header userId true "ИД администратора"
-// @Params input header adminLevel true "Уровень администратора"
-// @Params input path userid true "Ид пользователя которому удаляют аккаунт"
+// @Param userId header string true "ИД администратора"
+// @Param adminLevel header int true "Уровень администратора, где 0-не админ, 1 - админ младщего звена, 3 - старший админ"
+// @Param userid path int true "Ид пользователя, которого назначают администратором"
 // @Produce  json
 // @Success 200 {object} nil
 // @Failure 400 {object} internal.HackError
@@ -197,9 +197,9 @@ func deleteProfile(ctx *fiber.Ctx) error {
 // @Security ApiKeyAuth
 // @Description Удаление аккаунта не админиистратора
 // @ID deleteAdminProfile
-// @Params input header userId true "ИД администратора"
-// @Params input header adminLevel true "Уровень администратора"
-// @Params input path userid true "Ид пользователя которому удаляют аккаунт"
+// @Param userId header string true "ИД администратора"
+// @Param adminLevel header int true "Уровень администратора, где 0-не админ, 1 - админ младщего звена, 3 - старший админ"
+// @Param userid path int true "Ид пользователя, которого назначают администратором"
 // @Produce  json
 // @Success 200 {object} nil
 // @Failure 400 {object} internal.HackError
@@ -224,9 +224,9 @@ func deleteAdminProfile(ctx *fiber.Ctx) error {
 // @Security ApiKeyAuth
 // @Description Повышение уровня администратора
 // @ID promotionAdmin
-// @Params input header userId true "ИД администратора"
-// @Params input header adminLevel true "Уровень администратора"
-// @Params input path userid true "Ид пользователя, которому повысят уровень администратора"
+// @Param userId header string true "ИД администратора"
+// @Param adminLevel header int true "Уровень администратора, где 0-не админ, 1 - админ младщего звена, 3 - старший админ"
+// @Param userid path int true "Ид пользователя, которого назначают администратором"
 // @Produce  json
 // @Success 200 {object} nil
 // @Failure 400 {object} internal.HackError

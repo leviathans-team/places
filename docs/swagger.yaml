@@ -258,6 +258,23 @@ paths:
     put:
       description: Удаление аккаунта не админиистратора
       operationId: deleteAdminProfile
+      parameters:
+      - description: ИД администратора
+        in: header
+        name: userId
+        required: true
+        type: string
+      - description: Уровень администратора, где 0-не админ, 1 - админ младщего звена,
+          3 - старший админ
+        in: header
+        name: adminLevel
+        required: true
+        type: integer
+      - description: Ид пользователя, которого назначают администратором
+        in: path
+        name: userid
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -284,6 +301,23 @@ paths:
     put:
       description: Удаление аккаунта не админиистратора
       operationId: deleteProfile
+      parameters:
+      - description: ИД администратора
+        in: header
+        name: userId
+        required: true
+        type: string
+      - description: Уровень администратора, где 0-не админ, 1 - админ младщего звена,
+          3 - старший админ
+        in: header
+        name: adminLevel
+        required: true
+        type: integer
+      - description: Ид пользователя, которого назначают администратором
+        in: path
+        name: userid
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -310,6 +344,23 @@ paths:
     put:
       description: Повышение уровня администратора
       operationId: promotionAdmin
+      parameters:
+      - description: ИД администратора
+        in: header
+        name: userId
+        required: true
+        type: string
+      - description: Уровень администратора, где 0-не админ, 1 - админ младщего звена,
+          3 - старший админ
+        in: header
+        name: adminLevel
+        required: true
+        type: integer
+      - description: Ид пользователя, которого назначают администратором
+        in: path
+        name: userid
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -336,6 +387,23 @@ paths:
     put:
       description: Авторизировать пользователя
       operationId: setAdmin
+      parameters:
+      - description: ИД администратора
+        in: header
+        name: userId
+        required: true
+        type: string
+      - description: Уровень администратора, где 0-не админ, 1 - админ младщего звена,
+          3 - старший админ
+        in: header
+        name: adminLevel
+        required: true
+        type: integer
+      - description: Ид пользователя, которого назначают администратором
+        in: path
+        name: userid
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -362,6 +430,23 @@ paths:
     put:
       description: Снятие с поста администратора
       operationId: unSetAdmin
+      parameters:
+      - description: ИД администратора
+        in: header
+        name: userId
+        required: true
+        type: string
+      - description: Уровень администратора, где 0-не админ, 1 - админ младщего звена,
+          3 - старший админ
+        in: header
+        name: adminLevel
+        required: true
+        type: integer
+      - description: Ид пользователя, которого назначают администратором
+        in: path
+        name: userid
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -1148,6 +1233,13 @@ paths:
     post:
       description: Регистрация пользователя
       operationId: landlordRegister
+      parameters:
+      - description: Данные для регистрации
+        in: body
+        name: regDate
+        required: true
+        schema:
+          $ref: '#/definitions/golang-pkg_internal_auth.BusinessUserForRegister'
       produces:
       - application/json
       responses:
@@ -1243,6 +1335,13 @@ paths:
     post:
       description: Регистрация пользователя
       operationId: register
+      parameters:
+      - description: Данные для регистрации
+        in: body
+        name: regDate
+        required: true
+        schema:
+          $ref: '#/definitions/golang-pkg_internal_auth.UserForRegister'
       produces:
       - application/json
       responses:

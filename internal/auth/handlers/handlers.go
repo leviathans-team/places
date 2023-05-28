@@ -71,7 +71,7 @@ func login(ctx *fiber.Ctx) error {
 // @Tags auth
 // @Description Регистрация пользователя
 // @ID register
-// @Params input body auth.UserForRegister true "Имя, фамилия, отчетсво, почта, телефон, пароль"
+// @Param        regDate   body    auth.UserForRegister{}    true  "Данные для регистрации"
 // @Produce  json
 // @Success 200 {object} auth.UserForRegister
 // @Failure 400 {object} internal.HackError
@@ -109,7 +109,7 @@ func register(c *fiber.Ctx) error {
 // @Tags auth
 // @Description Регистрация пользователя
 // @ID landlordRegister
-// @Params input body auth.BusinessUserForRegister true "Имя, фамилия, отчетсво, почта, телефон, пароль, должность,  имя юр лица, ИНН"
+// @Param        regDate   body    auth.BusinessUserForRegister{}    true  "Данные для регистрации"
 // @Produce  json
 // @Success 200 {object} auth.BusinessUserForRegister
 // @Failure 400 {object} internal.HackError

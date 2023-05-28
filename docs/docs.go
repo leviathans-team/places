@@ -97,6 +97,29 @@ const docTemplate = `{
                 ],
                 "summary": "Удаление аккаунта администратора",
                 "operationId": "deleteAdminProfile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ИД администратора",
+                        "name": "userId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Уровень администратора, где 0-не админ, 1 - админ младщего звена, 3 - старший админ",
+                        "name": "adminLevel",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Ид пользователя, которого назначают администратором",
+                        "name": "userid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -138,6 +161,29 @@ const docTemplate = `{
                 ],
                 "summary": "Удаление аккаунта",
                 "operationId": "deleteProfile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ИД администратора",
+                        "name": "userId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Уровень администратора, где 0-не админ, 1 - админ младщего звена, 3 - старший админ",
+                        "name": "adminLevel",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Ид пользователя, которого назначают администратором",
+                        "name": "userid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -179,6 +225,29 @@ const docTemplate = `{
                 ],
                 "summary": "Повышение уровня администратора",
                 "operationId": "promotionAdmin",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ИД администратора",
+                        "name": "userId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Уровень администратора, где 0-не админ, 1 - админ младщего звена, 3 - старший админ",
+                        "name": "adminLevel",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Ид пользователя, которого назначают администратором",
+                        "name": "userid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -220,6 +289,29 @@ const docTemplate = `{
                 ],
                 "summary": "Назначение администратора",
                 "operationId": "setAdmin",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ИД администратора",
+                        "name": "userId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Уровень администратора, где 0-не админ, 1 - админ младщего звена, 3 - старший админ",
+                        "name": "adminLevel",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Ид пользователя, которого назначают администратором",
+                        "name": "userid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -261,6 +353,29 @@ const docTemplate = `{
                 ],
                 "summary": "Снятие с поста администратора",
                 "operationId": "unSetAdmin",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ИД администратора",
+                        "name": "userId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Уровень администратора, где 0-не админ, 1 - админ младщего звена, 3 - старший админ",
+                        "name": "adminLevel",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Ид пользователя, которого назначают администратором",
+                        "name": "userid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -1477,6 +1592,17 @@ const docTemplate = `{
                 ],
                 "summary": "Регистрация арендодателя",
                 "operationId": "landlordRegister",
+                "parameters": [
+                    {
+                        "description": "Данные для регистрации",
+                        "name": "regDate",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/golang-pkg_internal_auth.BusinessUserForRegister"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1618,6 +1744,17 @@ const docTemplate = `{
                 ],
                 "summary": "Регистрация",
                 "operationId": "register",
+                "parameters": [
+                    {
+                        "description": "Данные для регистрации",
+                        "name": "regDate",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/golang-pkg_internal_auth.UserForRegister"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
