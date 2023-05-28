@@ -1,7 +1,7 @@
 Postgres:
   user: "root"
   password: "qwerty_123"
-  host: "192.168.0.48"
+  host: "37.18.110.184"
   port: "5432"
   dbName: "postgres"
 
