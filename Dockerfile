@@ -1,4 +1,4 @@
-FROM golang:1.19-alpine3.14
+FROM golang:latest
 
 WORKDIR /app
 
@@ -9,3 +9,5 @@ COPY go.sum ./
 RUN go mod download
 
 COPY . .
+
+CMD ["go", "run", "/cmd/main.go"]
