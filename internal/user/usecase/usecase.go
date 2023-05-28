@@ -4,9 +4,19 @@ import (
 	"errors"
 	"fmt"
 	"golang-pkg/internal"
+	userModels "golang-pkg/internal/user"
 	userRepostiory "golang-pkg/internal/user/repository"
 	"time"
 )
+
+func GetUserData(userId int64) (*userModels.User, *internal.HackError) {
+	return userRepostiory.GetUserData(userId)
+}
+
+func GetLandlordData(userId int64) (*userModels.Landlord, *internal.HackError) {
+
+	return userRepostiory.GetLandlordData(userId)
+}
 
 func CreateNewPlace(placeId, userId int64) *internal.HackError {
 	err := userRepostiory.CreateNewPlace(placeId, userId)

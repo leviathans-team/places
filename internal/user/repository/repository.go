@@ -4,8 +4,35 @@ import (
 	"database/sql"
 	"github.com/lib/pq"
 	"golang-pkg/internal"
+	userModels "golang-pkg/internal/user"
 	"time"
 )
+
+func GetUserData(userId int64) (*userModels.User, *internal.HackError) {
+	var user userModels.User
+	err := internal.Tools.Connection.QueryRowx(`select name, surname, patronymic, email, phone from users_info where user_id = $1`, userId).StructScan(&user)
+	if err != nil {
+		internal.Tools.Logger.Print(err)
+		return nil, &internal.HackError{Code: 500, Err: err, Message: err.Error(), Timestamp: time.Now()}
+	}
+	return &user, nil
+}
+
+func GetLandlordData(userId int64) (*userModels.Landlord, *internal.HackError) {
+	var user userModels.Landlord
+	err := internal.Tools.Connection.QueryRowx(`select name, surname, patronymic, email, phone from users_info where user_id = $1`, userId).StructScan(&user)
+	if err != nil {
+		internal.Tools.Logger.Print(err)
+		return nil, &internal.HackError{Code: 500, Err: err, Message: err.Error(), Timestamp: time.Now()}
+	}
+
+	err = internal.Tools.Connection.QueryRowx(`select post, places, legal_entity, inn from landlords where user_id = $1`, userId).StructScan(&user)
+	if err != nil {
+		internal.Tools.Logger.Print(err)
+		return nil, &internal.HackError{Code: 500, Err: err, Message: err.Error(), Timestamp: time.Now()}
+	}
+	return &user, nil
+}
 
 func GetPlaceLandLord(userId int64) ([]int64, *internal.HackError) {
 	var slice pq.Int64Array

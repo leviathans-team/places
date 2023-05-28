@@ -12,7 +12,7 @@ import (
 
 func SetupRoutesForAuth(app *fiber.App) {
 	app.Get("getUserInfo", middleware.UserIdentification)
-	api := app.Group("/user")
+	api := app.Group("/auth")
 	api.Post("/login", login)
 	api.Post("/register", register)
 	api.Post("/businessRegister", landlordRegister)
@@ -38,7 +38,7 @@ func SetupRoutesForAuth(app *fiber.App) {
 // @Success 200 {object} string
 // @Failure 400 {object} internal.HackError
 // @Failure 500 {object} internal.HackError
-// @Router /user/login [post]
+// @Router /auth/login [post]
 // Возвращаю jwt-token, который храним в себе данные об авторизации
 func login(ctx *fiber.Ctx) error {
 	user := new(auth.UserForLogin)
@@ -51,7 +51,9 @@ func login(ctx *fiber.Ctx) error {
 			Timestamp: time.Now(),
 		}
 		ctx.Status(err.Code)
-		return ctx.JSON(err)
+		jErr, _ := err.MarshalJSON()
+		return ctx.Send(jErr)
+		//return ctx.JSON(err)
 	}
 
 	errorsValidate := middleware.ValidateStruct(user)
@@ -62,7 +64,9 @@ func login(ctx *fiber.Ctx) error {
 
 	token, err := usecase.SingIn(user)
 	if err != nil {
-		return ctx.JSON(err)
+		jErr, _ := err.MarshalJSON()
+		return ctx.Send(jErr)
+		//return ctx.JSON(err)
 	}
 	return ctx.JSON(token)
 }
@@ -76,7 +80,7 @@ func login(ctx *fiber.Ctx) error {
 // @Success 200 {object} auth.UserForRegister
 // @Failure 400 {object} internal.HackError
 // @Failure 500 {object} internal.HackError
-// @Router /user/register [post]
+// @Router /auth/register [post]
 // Возвращаю в случае успеха данные, введеные при регистрации
 func register(c *fiber.Ctx) error {
 	user := new(auth.UserForRegister)
@@ -88,7 +92,8 @@ func register(c *fiber.Ctx) error {
 			Timestamp: time.Now(),
 		}
 		c.Status(err.Code)
-		return c.JSON(err)
+		jErr, _ := err.MarshalJSON()
+		return c.Send(jErr)
 	}
 
 	errorsValidate := middleware.ValidateStruct(user)
@@ -98,7 +103,8 @@ func register(c *fiber.Ctx) error {
 	}
 	err := usecase.SingUp(user)
 	if err != nil {
-		return c.JSON(err)
+		jErr, _ := err.MarshalJSON()
+		return c.Send(jErr)
 	}
 	// ...
 
@@ -114,7 +120,7 @@ func register(c *fiber.Ctx) error {
 // @Success 200 {object} auth.BusinessUserForRegister
 // @Failure 400 {object} internal.HackError
 // @Failure 500 {object} internal.HackError
-// @Router /user/businessRegister [post]
+// @Router /auth/businessRegister [post]
 // Возвращаю в случае успеха данные, введеные при регистрации
 func landlordRegister(ctx *fiber.Ctx) error {
 	user := new(auth.BusinessUserForRegister)
@@ -126,7 +132,8 @@ func landlordRegister(ctx *fiber.Ctx) error {
 			Timestamp: time.Now(),
 		}
 		ctx.Status(err.Code)
-		return ctx.JSON(err)
+		jErr, _ := err.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	errorsValidate := middleware.ValidateStruct(user)
 	if errorsValidate != nil {
@@ -135,7 +142,8 @@ func landlordRegister(ctx *fiber.Ctx) error {
 	}
 	err := usecase.SingUpBusiness(user)
 	if err != nil {
-		return ctx.JSON(err)
+		jErr, _ := err.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	// ...
 	return ctx.JSON(*user)
@@ -146,7 +154,7 @@ func landlordRegister(ctx *fiber.Ctx) error {
 // @Description Регистрация пользователя -> Заглушка
 // @ID loginWithGos
 // @Failure 404 {object} error
-// @Router /user/o2auth/gos [post]
+// @Router /auth/o2auth/gos [post]
 // Заглушка
 func loginWithGos(ctx *fiber.Ctx) error {
 	ctx.Status(404)
@@ -158,7 +166,7 @@ func loginWithGos(ctx *fiber.Ctx) error {
 // @Description Регистрация пользователя -> Заглушка
 // @ID loginWithSber
 // @Failure 404 {object} error
-// @Router /user/o2auth/Sber [post]
+// @Router /auth/o2auth/Sber [post]
 // Заглушка
 func loginWithSber(ctx *fiber.Ctx) error {
 	ctx.Status(404)
@@ -170,7 +178,7 @@ func loginWithSber(ctx *fiber.Ctx) error {
 // @Description Регистрация пользователя -> Заглушка
 // @ID loginWithVK
 // @Failure 404 {object} error
-// @Router /user/o2auth/svk [post]
+// @Router /auth/o2auth/svk [post]
 // Заглушка
 func loginWithVK(ctx *fiber.Ctx) error {
 	ctx.Status(404)
@@ -182,7 +190,7 @@ func loginWithVK(ctx *fiber.Ctx) error {
 // @Description Регистрация пользователя -> Заглушка
 // @ID loginWithTinkoff
 // @Failure 404 {object} error
-// @Router /user/o2auth/Tinkoff [post]
+// @Router /auth/o2auth/Tinkoff [post]
 // Заглушка
 func loginWithTinkoff(ctx *fiber.Ctx) error {
 	ctx.Status(404)
