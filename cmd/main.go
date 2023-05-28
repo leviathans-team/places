@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger"
 	"github.com/gofiber/template/html"
 	"golang-pkg/config"
@@ -56,6 +57,13 @@ func main() {
 	app := fiber.New(fiber.Config{
 		Views: engine,
 	})
+
+	app.Use(cors.New(cors.Config{
+		AllowHeaders:     "Origin,Content-Type,Accept,Content-Length,Accept-Language,Accept-Encoding,Connection,Access-Control-Allow-Origin",
+		AllowOrigins:     "*",
+		AllowCredentials: true,
+		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
+	}))
 
 	app.Get("/swagger/*", swagger.HandlerDefault)
 	handlers.SetupRoutesForAuth(app)
