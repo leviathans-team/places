@@ -26,7 +26,8 @@ func GetAllFilters(ctx *fiber.Ctx) error {
 	if err != nil {
 		models.Tools.Logger.Println(err)
 		ctx.Status(err.Code)
-		return ctx.JSON(err)
+		jErr, _ := err.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	return ctx.JSON(body)
 }
@@ -52,14 +53,17 @@ func CreateFilter(ctx *fiber.Ctx) error {
 	if err := ctx.BodyParser(&body); err != nil {
 		models.Tools.Logger.Println(err)
 		ctx.Status(400)
-		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
+		hackErr := models.HackError{Code: 400, Err: err, Timestamp: time.Now()}
+		jErr, _ := hackErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 
 	result, err := usecase.CreateFilter(body, isAdmin)
 	if err != nil {
 		models.Tools.Logger.Println(err)
 		ctx.Status(err.Code)
-		return ctx.JSON(err)
+		jErr, _ := err.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	return ctx.JSON(result)
 }
@@ -89,14 +93,17 @@ func CreatePlace(ctx *fiber.Ctx) error {
 	if err != nil {
 		models.Tools.Logger.Println(err)
 		ctx.Status(400)
-		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
+		hackErr := models.HackError{Code: 400, Err: err, Timestamp: time.Now()}
+		jErr, _ := hackErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 
 	body, creationErr := usecase.CreatePlace(body, userId, isLandLord)
 	if creationErr != nil {
 		models.Tools.Logger.Println(err)
 		ctx.Status(creationErr.Code)
-		return ctx.JSON(creationErr)
+		jErr, _ := creationErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	return ctx.JSON(body)
 
@@ -128,7 +135,8 @@ func GetPlaces(ctx *fiber.Ctx) error {
 	if repError != nil {
 		models.Tools.Logger.Println(err)
 		ctx.Status(repError.Code)
-		return ctx.JSON(repError)
+		jErr, _ := repError.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	return ctx.Render("places", fiber.Map{
 		"Places": body,
@@ -153,7 +161,8 @@ func GetOnePlace(ctx *fiber.Ctx) error {
 	if repError != nil {
 		models.Tools.Logger.Println(repError)
 		ctx.Status(repError.Code)
-		return ctx.JSON(repError)
+		jErr, _ := repError.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	return ctx.Render("place", fiber.Map{
 		"Place": body,
@@ -184,7 +193,8 @@ func DeletePlace(ctx *fiber.Ctx) error {
 	if repErr != nil {
 		models.Tools.Logger.Println(repErr)
 		ctx.Status(repErr.Code)
-		return ctx.JSON(repErr)
+		jErr, _ := repErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	return ctx.SendStatus(200)
 }
@@ -211,7 +221,8 @@ func DeleteFilter(ctx *fiber.Ctx) error {
 	if repErr != nil {
 		models.Tools.Logger.Println(repErr)
 		ctx.Status(repErr.Code)
-		return ctx.JSON(repErr)
+		jErr, _ := repErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	return ctx.SendStatus(200)
 }
@@ -237,7 +248,8 @@ func CancelOrder(ctx *fiber.Ctx) error {
 	if repErr != nil {
 		models.Tools.Logger.Println(repErr)
 		ctx.Status(repErr.Code)
-		return ctx.JSON(repErr)
+		jErr, _ := repErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	return ctx.SendStatus(200)
 }
@@ -261,13 +273,16 @@ func CreateOrder(ctx *fiber.Ctx) error {
 	if err != nil {
 		models.Tools.Logger.Println(err)
 		ctx.Status(400)
-		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
+		hackErr := models.HackError{Code: 400, Err: err, Timestamp: time.Now()}
+		jErr, _ := hackErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	result, creationErr := usecase.CreateOrder(body)
 	if creationErr != nil {
 		models.Tools.Logger.Println(creationErr)
 		ctx.Status(creationErr.Code)
-		return ctx.JSON(creationErr)
+		jErr, _ := creationErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	return ctx.JSON(result)
 }
@@ -290,13 +305,16 @@ func UpdatePlace(ctx *fiber.Ctx) error {
 	if err != nil {
 		models.Tools.Logger.Println(err)
 		ctx.Status(400)
-		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
+		hackErr := models.HackError{Code: 400, Err: err, Timestamp: time.Now()}
+		jErr, _ := hackErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	updateErr := usecase.UpdatePlace(body)
 	if updateErr != nil {
 		models.Tools.Logger.Println(updateErr)
 		ctx.Status(updateErr.Code)
-		return ctx.JSON(updateErr)
+		jErr, _ := updateErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	return ctx.SendStatus(200)
 }
@@ -321,7 +339,8 @@ func SearchPlace(ctx *fiber.Ctx) error {
 	if searchErr != nil {
 		models.Tools.Logger.Println(searchErr)
 		ctx.Status(searchErr.Code)
-		return ctx.JSON(searchErr)
+		jErr, _ := searchErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	return ctx.JSON(result)
 }
@@ -347,7 +366,8 @@ func GetMyPlaces(ctx *fiber.Ctx) error {
 	if repErr != nil {
 		models.Tools.Logger.Println(repErr)
 		ctx.Status(repErr.Code)
-		return ctx.JSON(repErr)
+		jErr, _ := repErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	return ctx.JSON(body)
 }
@@ -371,7 +391,8 @@ func GetMyOrders(ctx *fiber.Ctx) error {
 	if repErr != nil {
 		models.Tools.Logger.Println(repErr)
 		ctx.Status(repErr.Code)
-		return ctx.JSON(repErr)
+		jErr, _ := repErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	return ctx.JSON(body)
 }
@@ -400,14 +421,17 @@ func CreateComment(ctx *fiber.Ctx) error {
 	if err != nil {
 		models.Tools.Logger.Println(err)
 		ctx.Status(400)
-		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
+		hackErr := models.HackError{Code: 400, Err: err, Timestamp: time.Now()}
+		jErr, _ := hackErr.MarshalJSON()
+		return ctx.JSON(jErr)
 	}
 
 	result, repErr := usecase.CreateComment(userId, place, body)
 	if repErr != nil {
 		models.Tools.Logger.Println(repErr)
 		ctx.Status(repErr.Code)
-		return ctx.JSON(repErr)
+		jErr, _ := repErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	return ctx.JSON(result)
 }
@@ -430,7 +454,8 @@ func GetComment(ctx *fiber.Ctx) error {
 	if repErr != nil {
 		models.Tools.Logger.Println(repErr)
 		ctx.Status(repErr.Code)
-		return ctx.JSON(repErr)
+		jErr, _ := repErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	return ctx.JSON(result)
 }
@@ -454,7 +479,8 @@ func GetNotApprovedPlace(ctx *fiber.Ctx) error {
 	body, creationErr := usecase.GetNotApprovedPlaces(isAdmin)
 	if creationErr != nil {
 		ctx.Status(creationErr.Code)
-		return ctx.JSON(creationErr)
+		jErr, _ := creationErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	return ctx.JSON(body)
 }
@@ -481,12 +507,15 @@ func MakeApproved(ctx *fiber.Ctx) error {
 	if err != nil {
 		models.Tools.Logger.Println(err)
 		ctx.Status(400)
-		return ctx.JSON(models.HackError{Code: 400, Err: err, Timestamp: time.Now()})
+		hackErr := models.HackError{Code: 400, Err: err, Timestamp: time.Now()}
+		jErr, _ := hackErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	result, creationErr := usecase.MakeApproved(placeId, isAdmin)
 	if creationErr != nil {
 		ctx.Status(creationErr.Code)
-		return ctx.JSON(creationErr)
+		jErr, _ := creationErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	return ctx.JSON(result)
 }
@@ -511,7 +540,8 @@ func CreateLike(ctx *fiber.Ctx) error {
 	if createErr != nil {
 		models.Tools.Logger.Println(createErr)
 		ctx.Status(createErr.Code)
-		return ctx.JSON(createErr)
+		jErr, _ := createErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	return ctx.SendStatus(200)
 }
@@ -534,7 +564,8 @@ func GetPlaceLikeCount(ctx *fiber.Ctx) error {
 	if getErr != nil {
 		models.Tools.Logger.Println(getErr)
 		ctx.Status(getErr.Code)
-		return ctx.JSON(getErr)
+		jErr, _ := getErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	return ctx.JSON(result)
 }
@@ -559,7 +590,8 @@ func IsLiked(ctx *fiber.Ctx) error {
 	if getErr != nil {
 		models.Tools.Logger.Println(getErr)
 		ctx.Status(getErr.Code)
-		return ctx.JSON(getErr)
+		jErr, _ := getErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	return ctx.JSON(result)
 }
