@@ -34,26 +34,31 @@ func UserIdentification(ctx *fiber.Ctx) error {
 	if header == "" {
 		ctx.Status(401)
 		log.Print(errors.New("empty auth header"))
-		return ctx.JSON(internal.HackError{
+		hackErr := internal.HackError{
 			Code:      401,
 			Err:       errors.New("empty auth header"),
 			Timestamp: time.Now(),
-		})
+		}
+		jErr, _ := hackErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	headerParts := strings.Split(header, " ")
 	if len(headerParts) != 2 {
 		ctx.Status(401)
 		log.Print(errors.New("invalid header"))
-		return ctx.JSON(internal.HackError{
+		hackErr := internal.HackError{
 			Code:      401,
 			Err:       errors.New("invalid header"),
 			Timestamp: time.Now(),
-		})
+		}
+		jErr, _ := hackErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 
 	headers, err := usecase.ParseToken(headerParts[1])
 	if err != nil {
-		return ctx.JSON(err)
+		jErr, _ := err.MarshalJSON()
+		return ctx.JSON(jErr)
 	}
 	ctx.Set("userId", strconv.FormatInt(headers.UserId, 10))
 	ctx.Set("IsLandLord", strconv.FormatBool(headers.IsLandLord))
@@ -68,24 +73,29 @@ func UserIsExist(ctx *fiber.Ctx) error {
 	if err != nil {
 		log.Print(errors.New("invalid header userId"))
 		ctx.Status(400)
-		return ctx.JSON(internal.HackError{
+		hackErr := internal.HackError{
 			Code:      400,
 			Err:       errors.New("invalid header userId"),
 			Timestamp: time.Now(),
-		})
+		}
+		jErr, _ := hackErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	res, hackErr := userRepostiory.IsExistsOnUsersTable(userIdInt)
 	if hackErr != nil {
-		return ctx.JSON(hackErr)
+		jErr, _ := hackErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	if !res {
 		ctx.Status(401)
-		return ctx.JSON(internal.HackError{
+		hackErr := internal.HackError{
 			Code:      401,
 			Err:       errors.New("user not found"),
 			Message:   "user not found",
 			Timestamp: time.Now(),
-		})
+		}
+		jErr, _ := hackErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	return ctx.Next()
 }
@@ -96,11 +106,13 @@ func AdminIsExist(ctx *fiber.Ctx) error {
 	if err != nil {
 		log.Print(errors.New("invalid header userId"))
 		ctx.Status(400)
-		return ctx.JSON(internal.HackError{
+		hackErr := internal.HackError{
 			Code:      400,
 			Err:       errors.New("invalid header userId"),
 			Timestamp: time.Now(),
-		})
+		}
+		jErr, _ := hackErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 
 	res, hackErr := userRepostiory.IsExistsOnAdminTable(adminIdInt)
@@ -109,12 +121,14 @@ func AdminIsExist(ctx *fiber.Ctx) error {
 	}
 	if !res {
 		ctx.Status(401)
-		return ctx.JSON(internal.HackError{
+		hackErr := internal.HackError{
 			Code:      401,
 			Err:       errors.New("user not found"),
 			Message:   "user not found",
 			Timestamp: time.Now(),
-		})
+		}
+		jErr, _ := hackErr.MarshalJSON()
+		return ctx.Send(jErr)
 	}
 	return ctx.Next()
 }
