@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/gofiber/fiber/v2"
 	"golang-pkg/internal"
+	_ "golang-pkg/internal/user"
 	user "golang-pkg/internal/user/usecase"
 	"golang-pkg/middleware"
 	"strconv"
@@ -25,7 +26,21 @@ func UserPanel(app *fiber.App) {
 	admin.Put("/deleteAdminProfile/id/:userId", deleteAdminProfile)
 }
 
+// @Summary Получение информации о пользователе
+// @Tags User
+// @Security ApiKeyAuth
+// @Description Получение информации о пользователе (ФИО, номер, почта)
+// @ID getUser
+// @Param userId header string true "ИД пользователя"
+// @Produce  json
+// @Success 200 {object} userModels.User
+// @Failure 400 {object} internal.HackError
+// @Failure 401 {object} internal.HackError
+// @Failure 500 {object} internal.HackError
+// @Router /user/info [get]
+// Возвращаю userModels.User если  все успешно
 func getUser(ctx *fiber.Ctx) error {
+
 	userId := ctx.GetRespHeader("userId", "")
 	userIdInt, err := strconv.ParseInt(userId, 10, 64)
 	if err != nil {
@@ -49,6 +64,19 @@ func getUser(ctx *fiber.Ctx) error {
 	}
 }
 
+// @Summary Получение информации о пользователе
+// @Tags 	Landlord
+// @Security ApiKeyAuth
+// @Description Получение информации о пользователе (ФИО, номер, почта, должность, его места, ЮР лицо, ИНН)
+// @ID getLandlord
+// @Param userId header string true "ИД пользователя"
+// @Produce  json
+// @Success 200 {object} userModels.Landlord
+// @Failure 400 {object} internal.HackError
+// @Failure 401 {object} internal.HackError
+// @Failure 500 {object} internal.HackError
+// @Router /landlord/info [get]
+// Возвращаю userModels.Landlord если  все успешно
 func getLandlord(ctx *fiber.Ctx) error {
 	userId := ctx.GetRespHeader("userId", "")
 	userIdInt, err := strconv.ParseInt(userId, 10, 64)

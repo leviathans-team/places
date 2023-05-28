@@ -513,6 +513,202 @@
                 }
             }
         },
+        "/auth/businessRegister": {
+            "post": {
+                "description": "Регистрация пользователя",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Регистрация арендодателя",
+                "operationId": "landlordRegister",
+                "parameters": [
+                    {
+                        "description": "Данные для регистрации",
+                        "name": "regDate",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/golang-pkg_internal_auth.BusinessUserForRegister"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/golang-pkg_internal_auth.BusinessUserForRegister"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "description": "Авторизировать пользователя",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Авторизация",
+                "operationId": "login",
+                "parameters": [
+                    {
+                        "description": "Данные для входа",
+                        "name": "loginDate",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/golang-pkg_internal_auth.UserForLogin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/o2auth/Sber": {
+            "post": {
+                "description": "Регистрация пользователя -\u003e Заглушка",
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Вход через Sber",
+                "operationId": "loginWithSber",
+                "responses": {
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/auth/o2auth/Tinkoff": {
+            "post": {
+                "description": "Регистрация пользователя -\u003e Заглушка",
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Вход через Tinkoff",
+                "operationId": "loginWithTinkoff",
+                "responses": {
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/auth/o2auth/gos": {
+            "post": {
+                "description": "Регистрация пользователя -\u003e Заглушка",
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Вход через госуслуги",
+                "operationId": "loginWithGos",
+                "responses": {
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/auth/o2auth/svk": {
+            "post": {
+                "description": "Регистрация пользователя -\u003e Заглушка",
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Вход через VK",
+                "operationId": "loginWithVK",
+                "responses": {
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "Регистрация пользователя",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Регистрация",
+                "operationId": "register",
+                "parameters": [
+                    {
+                        "description": "Данные для регистрации",
+                        "name": "regDate",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/golang-pkg_internal_auth.UserForRegister"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/golang-pkg_internal_auth.UserForRegister"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    }
+                }
+            }
+        },
         "/getUserInfo": {
             "get": {
                 "description": "На вход получаю токен в хедере Authorization",
@@ -538,6 +734,59 @@
                         "description": "OK",
                         "schema": {
                             "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    }
+                }
+            }
+        },
+        "/landlord/info": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Получение информации о пользователе (ФИО, номер, почта, должность, его места, ЮР лицо, ИНН)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Landlord"
+                ],
+                "summary": "Получение информации о пользователе",
+                "operationId": "getLandlord",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ИД пользователя",
+                        "name": "userId",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/golang-pkg_internal_user.Landlord"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal.HackError"
                         }
                     },
                     "500": {
@@ -1574,33 +1823,36 @@
                 }
             }
         },
-        "/user/businessRegister": {
-            "post": {
-                "description": "Регистрация пользователя",
+        "/user/info": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Получение информации о пользователе (ФИО, номер, почта)",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "User"
                 ],
-                "summary": "Регистрация арендодателя",
-                "operationId": "landlordRegister",
+                "summary": "Получение информации о пользователе",
+                "operationId": "getUser",
                 "parameters": [
                     {
-                        "description": "Данные для регистрации",
-                        "name": "regDate",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/golang-pkg_internal_auth.BusinessUserForRegister"
-                        }
+                        "type": "string",
+                        "description": "ИД пользователя",
+                        "name": "userId",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/golang-pkg_internal_auth.BusinessUserForRegister"
+                            "$ref": "#/definitions/golang-pkg_internal_user.User"
                         }
                     },
                     "400": {
@@ -1609,154 +1861,8 @@
                             "$ref": "#/definitions/internal.HackError"
                         }
                     },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/internal.HackError"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/login": {
-            "post": {
-                "description": "Авторизировать пользователя",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Авторизация",
-                "operationId": "login",
-                "parameters": [
-                    {
-                        "description": "Данные для входа",
-                        "name": "loginDate",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/golang-pkg_internal_auth.UserForLogin"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/internal.HackError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/internal.HackError"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/o2auth/Sber": {
-            "post": {
-                "description": "Регистрация пользователя -\u003e Заглушка",
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Вход через Sber",
-                "operationId": "loginWithSber",
-                "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/user/o2auth/Tinkoff": {
-            "post": {
-                "description": "Регистрация пользователя -\u003e Заглушка",
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Вход через Tinkoff",
-                "operationId": "loginWithTinkoff",
-                "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/user/o2auth/gos": {
-            "post": {
-                "description": "Регистрация пользователя -\u003e Заглушка",
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Вход через госуслуги",
-                "operationId": "loginWithGos",
-                "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/user/o2auth/svk": {
-            "post": {
-                "description": "Регистрация пользователя -\u003e Заглушка",
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Вход через VK",
-                "operationId": "loginWithVK",
-                "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/user/register": {
-            "post": {
-                "description": "Регистрация пользователя",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Регистрация",
-                "operationId": "register",
-                "parameters": [
-                    {
-                        "description": "Данные для регистрации",
-                        "name": "regDate",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/golang-pkg_internal_auth.UserForRegister"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/golang-pkg_internal_auth.UserForRegister"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/internal.HackError"
                         }
@@ -2058,6 +2164,61 @@
                     "type": "number"
                 },
                 "workingTime": {
+                    "type": "string"
+                }
+            }
+        },
+        "golang-pkg_internal_user.Landlord": {
+            "type": "object",
+            "properties": {
+                "INN": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "legal_entity": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "patronymic": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "places": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "post": {
+                    "type": "string"
+                },
+                "surname": {
+                    "type": "string"
+                }
+            }
+        },
+        "golang-pkg_internal_user.User": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "patronymic": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "surname": {
                     "type": "string"
                 }
             }

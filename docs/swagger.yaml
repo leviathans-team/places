@@ -194,6 +194,42 @@ definitions:
       workingTime:
         type: string
     type: object
+  golang-pkg_internal_user.Landlord:
+    properties:
+      INN:
+        type: string
+      email:
+        type: string
+      legal_entity:
+        type: string
+      name:
+        type: string
+      patronymic:
+        type: string
+      phone:
+        type: string
+      places:
+        items:
+          type: integer
+        type: array
+      post:
+        type: string
+      surname:
+        type: string
+    type: object
+  golang-pkg_internal_user.User:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      patronymic:
+        type: string
+      phone:
+        type: string
+      surname:
+        type: string
+    type: object
   internal.HackError:
     properties:
       code:
@@ -545,6 +581,137 @@ paths:
       summary: Подтвердить место
       tags:
       - Admin
+  /auth/businessRegister:
+    post:
+      description: Регистрация пользователя
+      operationId: landlordRegister
+      parameters:
+      - description: Данные для регистрации
+        in: body
+        name: regDate
+        required: true
+        schema:
+          $ref: '#/definitions/golang-pkg_internal_auth.BusinessUserForRegister'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/golang-pkg_internal_auth.BusinessUserForRegister'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal.HackError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal.HackError'
+      summary: Регистрация арендодателя
+      tags:
+      - auth
+  /auth/login:
+    post:
+      description: Авторизировать пользователя
+      operationId: login
+      parameters:
+      - description: Данные для входа
+        in: body
+        name: loginDate
+        required: true
+        schema:
+          $ref: '#/definitions/golang-pkg_internal_auth.UserForLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal.HackError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal.HackError'
+      summary: Авторизация
+      tags:
+      - auth
+  /auth/o2auth/Sber:
+    post:
+      description: Регистрация пользователя -> Заглушка
+      operationId: loginWithSber
+      responses:
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Вход через Sber
+      tags:
+      - auth
+  /auth/o2auth/Tinkoff:
+    post:
+      description: Регистрация пользователя -> Заглушка
+      operationId: loginWithTinkoff
+      responses:
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Вход через Tinkoff
+      tags:
+      - auth
+  /auth/o2auth/gos:
+    post:
+      description: Регистрация пользователя -> Заглушка
+      operationId: loginWithGos
+      responses:
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Вход через госуслуги
+      tags:
+      - auth
+  /auth/o2auth/svk:
+    post:
+      description: Регистрация пользователя -> Заглушка
+      operationId: loginWithVK
+      responses:
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Вход через VK
+      tags:
+      - auth
+  /auth/register:
+    post:
+      description: Регистрация пользователя
+      operationId: register
+      parameters:
+      - description: Данные для регистрации
+        in: body
+        name: regDate
+        required: true
+        schema:
+          $ref: '#/definitions/golang-pkg_internal_auth.UserForRegister'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/golang-pkg_internal_auth.UserForRegister'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal.HackError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal.HackError'
+      summary: Регистрация
+      tags:
+      - auth
   /getUserInfo:
     get:
       description: На вход получаю токен в хедере Authorization
@@ -569,6 +736,41 @@ paths:
       summary: Проверка токена
       tags:
       - auth
+  /landlord/info:
+    get:
+      description: Получение информации о пользователе (ФИО, номер, почта, должность,
+        его места, ЮР лицо, ИНН)
+      operationId: getLandlord
+      parameters:
+      - description: ИД пользователя
+        in: header
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/golang-pkg_internal_user.Landlord'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal.HackError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal.HackError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal.HackError'
+      security:
+      - ApiKeyAuth: []
+      summary: Получение информации о пользователе
+      tags:
+      - Landlord
   /myOrders:
     get:
       description: возвращение всех бронирований пользователя
@@ -1229,137 +1431,40 @@ paths:
       summary: Добавить место в избранное
       tags:
       - places
-  /user/businessRegister:
-    post:
-      description: Регистрация пользователя
-      operationId: landlordRegister
+  /user/info:
+    get:
+      description: Получение информации о пользователе (ФИО, номер, почта)
+      operationId: getUser
       parameters:
-      - description: Данные для регистрации
-        in: body
-        name: regDate
+      - description: ИД пользователя
+        in: header
+        name: userId
         required: true
-        schema:
-          $ref: '#/definitions/golang-pkg_internal_auth.BusinessUserForRegister'
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/golang-pkg_internal_auth.BusinessUserForRegister'
+            $ref: '#/definitions/golang-pkg_internal_user.User'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/internal.HackError'
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/internal.HackError'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/internal.HackError'
-      summary: Регистрация арендодателя
+      security:
+      - ApiKeyAuth: []
+      summary: Получение информации о пользователе
       tags:
-      - auth
-  /user/login:
-    post:
-      description: Авторизировать пользователя
-      operationId: login
-      parameters:
-      - description: Данные для входа
-        in: body
-        name: loginDate
-        required: true
-        schema:
-          $ref: '#/definitions/golang-pkg_internal_auth.UserForLogin'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/internal.HackError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/internal.HackError'
-      summary: Авторизация
-      tags:
-      - auth
-  /user/o2auth/Sber:
-    post:
-      description: Регистрация пользователя -> Заглушка
-      operationId: loginWithSber
-      responses:
-        "404":
-          description: Not Found
-          schema: {}
-      summary: Вход через Sber
-      tags:
-      - auth
-  /user/o2auth/Tinkoff:
-    post:
-      description: Регистрация пользователя -> Заглушка
-      operationId: loginWithTinkoff
-      responses:
-        "404":
-          description: Not Found
-          schema: {}
-      summary: Вход через Tinkoff
-      tags:
-      - auth
-  /user/o2auth/gos:
-    post:
-      description: Регистрация пользователя -> Заглушка
-      operationId: loginWithGos
-      responses:
-        "404":
-          description: Not Found
-          schema: {}
-      summary: Вход через госуслуги
-      tags:
-      - auth
-  /user/o2auth/svk:
-    post:
-      description: Регистрация пользователя -> Заглушка
-      operationId: loginWithVK
-      responses:
-        "404":
-          description: Not Found
-          schema: {}
-      summary: Вход через VK
-      tags:
-      - auth
-  /user/register:
-    post:
-      description: Регистрация пользователя
-      operationId: register
-      parameters:
-      - description: Данные для регистрации
-        in: body
-        name: regDate
-        required: true
-        schema:
-          $ref: '#/definitions/golang-pkg_internal_auth.UserForRegister'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/golang-pkg_internal_auth.UserForRegister'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/internal.HackError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/internal.HackError'
-      summary: Регистрация
-      tags:
-      - auth
+      - User
 securityDefinitions:
   ApiKeyAuth:
     in: header
