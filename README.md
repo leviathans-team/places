@@ -35,6 +35,9 @@ go run cmd/main.go
 2) Скачать все либы через go mod download
 3) Иметь активную бд Postgres
 4) Изменить параметы в файл config на свои
+
+Кроме этого можно запустить из докера 
+для этого команда : docker-compose up -d --build hack
 ### Пример
 ```
 Postgres:
